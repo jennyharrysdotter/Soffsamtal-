@@ -260,6 +260,7 @@ $("who").onclick = () => {
   $("starter").textContent = opts[Math.floor(Math.random() * opts.length)];
 };
 build();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 
 </body>
