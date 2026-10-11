@@ -32,6 +32,17 @@
   --q-font: "Figtree", system-ui, sans-serif;
   --q-weight: 800;
 }
+:root[data-mode="familj"] {
+  --bg: #d3e8c8; --bg-2: #e6f2df;
+  --frame: #2e7a46; --frame-deep: #1d5530;
+  --face: #fffaea; --face-alt: #ffbf73;
+  --txt: #2e7a46; --inv-txt: #fffaea;
+  --ink: #12301c; --accent: #d9531e;
+  --q-font: "Figtree", system-ui, sans-serif;
+  --q-weight: 700;
+}
+:root[data-mode="familj"] .card { border-radius: 28px; }
+:root[data-mode="familj"] .face { border-radius: 18px; }
 html, body { height: 100%; margin: 0; }
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 [hidden] { display: none !important; }
@@ -46,7 +57,7 @@ h1 { font-family: "Young Serif", Georgia, serif; font-weight: 400; font-size: 1.
 h1 small { display: block; font-family: var(--body); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--frame); margin-top: 3px; }
 .count { font-size: .8rem; font-weight: 600; color: var(--frame-deep); font-variant-numeric: tabular-nums; white-space: nowrap; background: var(--bg-2); padding: 6px 10px; border-radius: 999px; }
 
-.modes { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-2); border-radius: 14px; padding: 4px; gap: 4px; }
+.modes { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--bg-2); border-radius: 14px; padding: 4px; gap: 4px; }
 .mode { font: 700 .95rem var(--body); border: 0; border-radius: 10px; padding: 10px; background: transparent; color: var(--frame-deep); cursor: pointer; }
 .mode[aria-pressed="true"] { background: var(--frame); color: var(--face); }
 
@@ -104,6 +115,7 @@ button:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; 
   <div class="modes" role="group" aria-label="Läge">
     <button class="mode" id="mode-par" data-mode="par">Par</button>
     <button class="mode" id="mode-vanner" data-mode="vanner">Vänner</button>
+    <button class="mode" id="mode-familj" data-mode="familj">Familj</button>
   </div>
 
   <nav class="chips" id="chips" aria-label="Kategori"></nav>
@@ -129,6 +141,98 @@ button:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; 
 
 <script>
 const MODES = {
+  familj: {
+    sub: "med familjen", mark: "☀", theme: "#d3e8c8",
+    foot: "Alla svarar på samma kort, små som stora.",
+    who: ["Den yngsta börjar", "Den äldsta börjar", "Den som drog kortet börjar", "Den som har flest bokstäver i sitt namn börjar", "Den som vaknade först i dag börjar", "Den som sitter närmast dörren börjar", "Den som senast åt något gott börjar", "Den som har en strumpa med mönster börjar"],
+    style: { "Vår familj": "", "Minnen": "alt", "Lär känna": "", "Tänk om": "inv", "Skratt": "alt", "Drömmar": "" },
+    deck: {
+      "Vår familj": [
+        "Vad är det bästa med vår familj?",
+        "Vilken av våra traditioner tycker du mest om?",
+        "Vad gör vi tillsammans som du vill att vi gör oftare?",
+        "Vem i familjen är bäst på att trösta, och hur gör hen?",
+        "Vilken mat tycker du att vår familj är bäst på att laga?",
+        "Om vår familj hade ett motto, vad skulle det vara?",
+        "Vad är något snällt som någon i familjen gjort för dig?",
+        "Vilket ljud hör du mest hemma hos oss?",
+        "Vem i familjen är mest lik dig, och på vilket sätt?",
+        "Vilken regel hemma skulle du vilja ändra på?",
+        "Vad tycker du att vi är riktigt bra på som familj?",
+        "Om vår familj var ett lag, vilken sport skulle vi spela?"
+      ],
+      "Minnen": [
+        "Vilket är ditt bästa minne från i somras?",
+        "Vilken utflykt med familjen minns du bäst?",
+        "Vad är det roligaste som hänt hemma hos oss?",
+        "Vilken födelsedag har varit bäst hittills?",
+        "Vilket är ditt första minne?",
+        "När var du som allra stoltast över dig själv?",
+        "Vilken present har du blivit gladast för?",
+        "Vilket väder har du bäst minnen av: snö, sol eller regn?",
+        "Vad lekte du mest med när du var mindre?",
+        "Berätta om en gång när något gick fel men blev roligt.",
+        "Vilken plats har vi varit på som du vill åka tillbaka till?",
+        "Vad är det godaste du har ätit med familjen?"
+      ],
+      "Lär känna": [
+        "Vad gör dig riktigt glad?",
+        "Vad är du bra på som du tycker att vi borde veta?",
+        "Vad tycker du är svårt just nu?",
+        "Vilken är din favoritlåt just nu?",
+        "Vad gör du helst när du har tråkigt?",
+        "Vad tänker du på innan du somnar?",
+        "Vilket djur skulle du vilja vara en dag?",
+        "Vem är din förebild, och varför?",
+        "Vad vill du lära dig mer om?",
+        "Vilken superkraft passar dig bäst?",
+        "Vad gör en dag till en riktigt bra dag?",
+        "Vad är du rädd för, och vad hjälper då?"
+      ],
+      "Tänk om": [
+        "Tänk om du fick bestämma allt hemma i en dag. Vad händer?",
+        "Tänk om djur kunde prata. Vilket djur skulle du prata med först?",
+        "Tänk om vi bodde på en båt. Vad skulle vara bäst?",
+        "Tänk om du var osynlig i en timme. Vad gör du?",
+        "Tänk om du fick uppfinna en ny glass. Vilken smak?",
+        "Tänk om skolan eller jobbet bara var en dag i veckan. Vad gör du resten?",
+        "Tänk om du kunde flyga. Vart flyger du först?",
+        "Tänk om vi fick ett husdjur i morgon. Vilket och vad heter det?",
+        "Tänk om du var kung eller drottning. Vilken lag inför du?",
+        "Tänk om leksaker vaknade på natten. Vad skulle de göra?",
+        "Tänk om du kunde resa i tiden. Framåt eller bakåt?",
+        "Tänk om vi bodde i ett slott. Vilket rum vill du ha?"
+      ],
+      "Skratt": [
+        "Gör din bästa djurimitation. Alla gissar!",
+        "Vad är det tokigaste du har drömt?",
+        "Vem i familjen är bäst på att få andra att skratta?",
+        "Vilken är den konstigaste maten du har smakat?",
+        "Hitta på ett nytt ord och förklara vad det betyder.",
+        "Vilket är ditt bästa skämt?",
+        "Vem i familjen skulle vinna en tävling i att vara tyst?",
+        "Om du var en grönsak, vilken skulle du vara?",
+        "Gör en grimas som visar hur måndagar känns.",
+        "Vem här skulle bli bäst cirkusartist, och vad skulle hen göra?",
+        "Vad skulle hända om katten eller hunden fick bestämma?",
+        "Hitta på ett namn på vår familjs egen dans, och visa den!"
+      ],
+      "Drömmar": [
+        "Vad vill du göra när du blir stor, eller större?",
+        "Vilket land skulle du vilja resa till med familjen?",
+        "Vad ser du mest fram emot just nu?",
+        "Om du fick bygga ett eget rum, hur skulle det se ut?",
+        "Vad vill du att vi gör nästa helg?",
+        "Vilket äventyr drömmer du om?",
+        "Vad vill du lära dig innan nästa sommar?",
+        "Om du fick önska dig en sak för hela familjen, vad blir det?",
+        "Hur ser en perfekt lördag ut för dig?",
+        "Vilken ny tradition vill du att vi börjar med?",
+        "Vem skulle du vilja träffa i verkliga livet?",
+        "Vad vill du att familjen ska komma ihåg om i år?"
+      ]
+    }
+  },
   par: {
     sub: "för två", mark: "♡", theme: "#f4c6d3",
     foot: "Ni svarar båda på samma kort.",
