@@ -8,97 +8,112 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Soffsamtal</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
-/* Layout: one-screen card table for two — category chips, one card centered, draw button at thumb height. Single deliberate rosé look. */
+/* Layout: one-screen card table — mode switch + chips on top, one card centered, draw button at thumb height.
+   Två lägen: Par (rosé/röd, mjuk serif) och Vänner (himmelsblå/kobolt/gul, rak och lekfull). */
 :root {
-  --bg: #f4c6d3;         /* rosé bord */
-  --bg-2: #f9dbe4;
-  --red: #d42a3c;        /* kortröd */
-  --red-deep: #a51d2d;
-  --cream: #fff3dc;      /* kortpapper */
-  --pink: #f7b3c8;
-  --blue: #2337c6;       /* liten kontrast i detaljer */
-  --ink: #3a0f17;
-  --display: "Young Serif", Georgia, serif;
+  --bg: #f4c6d3; --bg-2: #f9dbe4;
+  --frame: #d42a3c; --frame-deep: #a51d2d;
+  --face: #fff3dc; --face-alt: #f7b3c8;
+  --txt: #d42a3c; --inv-txt: #fff3dc;
+  --ink: #3a0f17; --accent: #2337c6;
+  --q-font: "Young Serif", Georgia, serif;
   --body: "Figtree", system-ui, -apple-system, sans-serif;
+  --q-weight: 400;
   color-scheme: light;
 }
-html, body { height: 100%; }
-body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; }
+:root[data-mode="vanner"] {
+  --bg: #c9dcf6; --bg-2: #e1ecfb;
+  --frame: #1f3fbf; --frame-deep: #142a85;
+  --face: #fff7dc; --face-alt: #ffd65c;
+  --txt: #1f3fbf; --inv-txt: #ffd65c;
+  --ink: #0f1a45; --accent: #e5462e;
+  --q-font: "Figtree", system-ui, sans-serif;
+  --q-weight: 800;
+}
+html, body { height: 100%; margin: 0; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; transition: background .4s; }
 .app {
   min-height: 100%; box-sizing: border-box; max-width: 480px; margin: 0 auto;
-  padding-inline: 16px; padding-block: 16px 20px;
-  display: flex; flex-direction: column; gap: 14px;
+  padding-inline: 16px; padding-block: 14px 20px;
+  display: flex; flex-direction: column; gap: 12px;
 }
 header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-h1 { font-family: var(--display); font-weight: 400; font-size: 1.5rem; margin: 0; color: var(--red-deep); line-height: 1.1; }
-h1 small { display: block; font-family: var(--body); font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-top: 3px; }
-.count { font-size: .8rem; font-weight: 600; color: var(--red-deep); font-variant-numeric: tabular-nums; white-space: nowrap; background: var(--bg-2); padding: 6px 10px; border-radius: 999px; }
+h1 { font-family: "Young Serif", Georgia, serif; font-weight: 400; font-size: 1.5rem; margin: 0; color: var(--frame-deep); line-height: 1.1; }
+h1 small { display: block; font-family: var(--body); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--frame); margin-top: 3px; }
+.count { font-size: .8rem; font-weight: 600; color: var(--frame-deep); font-variant-numeric: tabular-nums; white-space: nowrap; background: var(--bg-2); padding: 6px 10px; border-radius: 999px; }
+
+.modes { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-2); border-radius: 14px; padding: 4px; gap: 4px; }
+.mode { font: 700 .95rem var(--body); border: 0; border-radius: 10px; padding: 10px; background: transparent; color: var(--frame-deep); cursor: pointer; }
+.mode[aria-pressed="true"] { background: var(--frame); color: var(--face); }
 
 .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding: 2px 16px 4px; }
 .chips::-webkit-scrollbar { display: none; }
-.chip {
-  flex: none; font: 600 .85rem var(--body); color: var(--red-deep);
-  background: var(--bg-2); border: 1.5px solid transparent; border-radius: 999px; padding: 8px 14px; cursor: pointer;
-}
-.chip[aria-pressed="true"] { background: var(--red); color: var(--cream); }
-.chip:focus-visible, button:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
+.chip { flex: none; font: 600 .85rem var(--body); color: var(--frame-deep); background: var(--bg-2); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--frame); color: var(--face); }
+button:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
 
-.stage { flex: 1; display: grid; place-items: center; min-height: 330px; }
+.stage { flex: 1; display: grid; place-items: center; min-height: 300px; }
 .card {
-  --face: var(--cream); --frame: var(--red); --txt: var(--red);
-  width: 100%; max-width: 100%; aspect-ratio: 5 / 7; max-height: 60vh; box-sizing: border-box;
-  background: var(--frame); border-radius: 20px; padding: 16px;
-  box-shadow: 0 22px 40px -22px #7a1424aa;
+  --c-face: var(--face); --c-frame: var(--frame); --c-txt: var(--txt);
+  width: 100%; max-width: 100%; aspect-ratio: 5 / 7; max-height: 56vh; box-sizing: border-box;
+  background: var(--c-frame); border-radius: 20px; padding: 16px;
+  box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--frame-deep) 70%, transparent);
   transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s;
 }
-.card.alt { --face: var(--pink); }
-.card.inv { --face: var(--red); --frame: var(--pink); --txt: var(--cream); }
+.card.alt { --c-face: var(--face-alt); }
+.card.inv { --c-face: var(--frame); --c-frame: var(--face-alt); --c-txt: var(--inv-txt); }
+:root[data-mode="vanner"] .card { border-radius: 10px; }
+:root[data-mode="vanner"] .face { border-radius: 4px; }
 .face {
-  height: 100%; box-sizing: border-box; background: var(--face); border-radius: 12px;
-  outline: 2px dashed color-mix(in srgb, var(--frame) 55%, var(--face)); outline-offset: -9px;
-  display: flex; flex-direction: column; padding: 22px 20px; color: var(--txt);
+  height: 100%; box-sizing: border-box; background: var(--c-face); border-radius: 12px;
+  outline: 2px dashed color-mix(in srgb, var(--c-frame) 55%, var(--c-face)); outline-offset: -9px;
+  display: flex; flex-direction: column; padding: 22px 20px; color: var(--c-txt);
 }
 .card.out { transform: translateX(-30px) rotate(-6deg); opacity: 0; }
 .card.in { transform: translateX(30px) rotate(5deg); opacity: 0; transition: none; }
 .cat { font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; text-align: center; opacity: .8; }
 .q {
   flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
-  font-family: var(--display); font-size: clamp(1.35rem, 6.2vw, 1.8rem); line-height: 1.3; text-wrap: balance; padding: 6px 4px;
+  font-family: var(--q-font); font-weight: var(--q-weight); font-size: clamp(1.3rem, 6vw, 1.75rem); line-height: 1.28; text-wrap: balance; padding: 6px 4px;
 }
-.mark { text-align: center; font-size: 1.1rem; line-height: 1; }
+.mark { text-align: center; font-size: 1.15rem; line-height: 1; font-weight: 800; }
 
-.starter { min-height: 1.4em; text-align: center; font-weight: 600; color: var(--red-deep); font-size: .95rem; }
+.starter { min-height: 1.4em; text-align: center; font-weight: 700; color: var(--frame-deep); font-size: .95rem; }
 .actions { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; }
-button { font-family: var(--body); cursor: pointer; border-radius: 16px; }
-.draw { font-size: 1.05rem; font-weight: 700; padding: 17px; border: 0; background: var(--red); color: var(--cream); box-shadow: 0 4px 0 var(--red-deep); }
-.draw:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--red-deep); }
-.ghost { font-size: 1rem; font-weight: 600; padding: 0 16px; background: var(--bg-2); color: var(--red-deep); border: 0; }
+.draw { font: 700 1.05rem var(--body); padding: 17px; border: 0; border-radius: 16px; background: var(--frame); color: var(--face); box-shadow: 0 4px 0 var(--frame-deep); cursor: pointer; }
+.draw:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--frame-deep); }
+.ghost { font: 600 1rem var(--body); padding: 0 16px; border-radius: 16px; background: var(--bg-2); color: var(--frame-deep); border: 0; cursor: pointer; }
 .ghost:disabled { opacity: .4; cursor: default; }
-.foot { font-size: .8rem; color: var(--red-deep); text-align: center; opacity: .85; }
-.foot button { background: none; border: 0; color: var(--blue); font-weight: 600; font-size: .8rem; text-decoration: underline; padding: 4px; }
+.foot { font-size: .8rem; color: var(--frame-deep); text-align: center; opacity: .85; }
+.foot button { background: none; border: 0; color: var(--accent); font: 600 .8rem var(--body); text-decoration: underline; padding: 4px; cursor: pointer; }
 
-@media (prefers-reduced-motion: reduce) { .card, .card.out, .card.in { transition: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .card, .card.out, .card.in { transition: none; transform: none; } body { transition: none; } }
 </style>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 </head>
 <body>
-
 <div class="app">
   <header>
-    <h1>Soffsamtal<small>för två</small></h1>
+    <h1>Soffsamtal<small id="sub">för två</small></h1>
     <span class="count" id="count"></span>
   </header>
+
+  <div class="modes" role="group" aria-label="Läge">
+    <button class="mode" id="mode-par" data-mode="par">Par</button>
+    <button class="mode" id="mode-vanner" data-mode="vanner">Vänner</button>
+  </div>
 
   <nav class="chips" id="chips" aria-label="Kategori"></nav>
 
   <main class="stage">
     <article class="card" id="card" aria-live="polite">
       <div class="face">
-        <div class="cat" id="cat">Vi två</div>
-        <div class="q" id="q">Vilket ögonblick ur vår första tid tänker du oftast på?</div>
-        <div class="mark" aria-hidden="true">♡</div>
+        <div class="cat" id="cat"></div>
+        <div class="q" id="q"></div>
+        <div class="mark" id="mark" aria-hidden="true">♡</div>
       </div>
     </article>
   </main>
@@ -109,109 +124,207 @@ button { font-family: var(--body); cursor: pointer; border-radius: 16px; }
     <button class="draw" id="draw">Dra ett kort</button>
     <button class="ghost" id="who" aria-label="Lotta vem som börjar">Vem börjar?</button>
   </div>
-  <div class="foot">Ni svarar båda på samma kort. <button id="reset">Blanda om</button></div>
+  <div class="foot" id="foot">Alla svarar på samma kort. <button id="reset">Blanda om</button></div>
 </div>
 
 <script>
-const DECK = {
-  "Vi två": [
-    "Vilket ögonblick ur vår första tid tänker du oftast på?",
-    "När kände du att det här var på riktigt mellan oss?",
-    "Vilken av våra resor eller utflykter skulle du vilja göra om?",
-    "Vad är vårt bästa internskämt, och hur började det?",
-    "När var vi som bäst som lag?",
-    "Vilken svår period tycker du att vi tog oss igenom bra?",
-    "Vad gjorde jag första gången som fick dig att bli intresserad?",
-    "Vilken vanlig kväll med oss minns du som extra fin?",
-    "Vad har vi blivit bättre på sedan vi träffades?",
-    "Vilket foto på oss tycker du mest om, och varför?",
-    "Vilken plats känns som vår plats?",
-    "Vad tror du andra ser när de ser oss tillsammans?"
-  ],
-  "Lär känna": [
-    "Vad i din uppväxt har format dig mest?",
-    "Vad gör dig nervös som du sällan berättar?",
-    "Vilken egenskap hos dig själv är du mest stolt över?",
-    "Vad behöver du när du har haft en dålig dag?",
-    "Vilken dröm hade du förr som du har släppt?",
-    "Vad får dig att känna dig mest älskad?",
-    "Vad har du ändrat åsikt om de senaste åren?",
-    "Vilken vän eller släkting har betytt mest för dig, och varför?",
-    "Vad skulle tolvåriga du tycka om livet du har nu?",
-    "Vad är du rädd att missa i livet?",
-    "När känner du dig som mest fri?",
-    "Vad önskar du att fler frågade dig om?"
-  ],
-  "Vardag & mys": [
-    "Vad är det mysigaste vi har gjort den senaste tiden?",
-    "Vilken liten sak gör jag i vardagen som du uppskattar?",
-    "Hur ser vår perfekta lediga söndag ut?",
-    "Vilken middag ska vi laga ihop snart?",
-    "Vilken syssla hemma skulle du gärna byta bort, och mot vad?",
-    "Vad skulle göra våra vardagskvällar lite bättre?",
-    "Vilken serie eller film har varit bäst att se tillsammans?",
-    "Vilken rutin hos oss vill du aldrig ska försvinna?",
-    "Vad gör du när du vill visa mig omtanke utan ord?",
-    "Vad ska vi sluta stressa över?",
-    "Vilken årstid är bäst för oss, och vad gör vi då?",
-    "Vad har du skrattat mest åt den här veckan?"
-  ],
-  "Drömmar": [
-    "Var tror du att vi bor om tio år, och hur ser det ut?",
-    "Vilket äventyr vill du att vi gör tillsammans?",
-    "Vad vill du att vi ska ha hunnit med till nästa sommar?",
-    "Vilken tradition vill du att vi startar?",
-    "Om vi fick ett år ledigt med full lön, vad gör vi?",
-    "Vad vill du lära dig, och kan jag hjälpa till?",
-    "Vilket land eller vilken stad vill du att vi upptäcker ihop?",
-    "Hur vill du att vi firar nästa stora högtid?",
-    "Vad är en liten dröm du har som vi kan göra av redan i år?",
-    "Vad vill du att vi ska vara kända för bland våra vänner?",
-    "Hur vill du att vi har det när vi är gamla?",
-    "Vad vill du göra mer av och mindre av ihop framöver?"
-  ],
-  "Närhet": [
-    "När känner du dig mest nära mig?",
-    "Vilken beröring tycker du mest om i vardagen?",
-    "Vad är det mest romantiska jag har gjort?",
-    "När tycker du att jag är som mest attraktiv?",
-    "Vad skulle du vilja att vi gjorde oftare när vi är nära?",
-    "Vilken kyss minns du bäst?",
-    "Vad får dig att känna dig trygg med mig?",
-    "Vad är en perfekt dejt för dig, från början till slut?",
-    "Finns det något nytt du är nyfiken på att vi testar?",
-    "Hur vill du helst att jag visar att jag vill ha dig?",
-    "Vilket kompliment från mig minns du?",
-    "Vad gör att du kan slappna av helt med mig?"
-  ],
-  "Skratt": [
-    "Vad var vår pinsammaste stund tillsammans?",
-    "Vilken av mina vanor skulle bli en bra sketch?",
-    "Om vi var ett band, vad skulle vi heta?",
-    "Vilket djur är jag, och vilket är du?",
-    "Vem av oss skulle klara sig längst på en öde ö?",
-    "Vad är det dummaste vi har bråkat om?",
-    "Vilken kändis skulle spela mig i filmen om oss?",
-    "Vilken av mina rätter borde aldrig lagas igen?",
-    "Vad skulle vår dokusåpa heta?",
-    "Vilket ord eller uttryck säger jag för ofta?",
-    "Vilket misslyckat projekt hemma minns du med glädje?",
-    "Om vi bytte liv i en dag, vad gör du först?"
-  ]
+const MODES = {
+  par: {
+    sub: "för två", mark: "♡", theme: "#f4c6d3",
+    foot: "Ni svarar båda på samma kort.",
+    who: ["Du börjar", "Din partner börjar", "Den som är yngst börjar", "Den som drog kortet börjar", "Den som log först börjar"],
+    style: { "Vi två": "", "Lär känna": "alt", "Vardag & mys": "", "Drömmar": "alt", "Närhet": "inv", "Skratt": "alt" },
+    deck: {
+      "Vi två": [
+        "Vilket ögonblick ur vår första tid tänker du oftast på?",
+        "När kände du att det här var på riktigt mellan oss?",
+        "Vilken av våra resor eller utflykter skulle du vilja göra om?",
+        "Vad är vårt bästa internskämt, och hur började det?",
+        "När var vi som bäst som lag?",
+        "Vilken svår period tycker du att vi tog oss igenom bra?",
+        "Vad gjorde jag första gången som fick dig att bli intresserad?",
+        "Vilken vanlig kväll med oss minns du som extra fin?",
+        "Vad har vi blivit bättre på sedan vi träffades?",
+        "Vilket foto på oss tycker du mest om, och varför?",
+        "Vilken plats känns som vår plats?",
+        "Vad tror du andra ser när de ser oss tillsammans?"
+      ],
+      "Lär känna": [
+        "Vad i din uppväxt har format dig mest?",
+        "Vad gör dig nervös som du sällan berättar?",
+        "Vilken egenskap hos dig själv är du mest stolt över?",
+        "Vad behöver du när du har haft en dålig dag?",
+        "Vilken dröm hade du förr som du har släppt?",
+        "Vad får dig att känna dig mest älskad?",
+        "Vad har du ändrat åsikt om de senaste åren?",
+        "Vilken vän eller släkting har betytt mest för dig, och varför?",
+        "Vad skulle tolvåriga du tycka om livet du har nu?",
+        "Vad är du rädd att missa i livet?",
+        "När känner du dig som mest fri?",
+        "Vad önskar du att fler frågade dig om?"
+      ],
+      "Vardag & mys": [
+        "Vad är det mysigaste vi har gjort den senaste tiden?",
+        "Vilken liten sak gör jag i vardagen som du uppskattar?",
+        "Hur ser vår perfekta lediga söndag ut?",
+        "Vilken middag ska vi laga ihop snart?",
+        "Vilken syssla hemma skulle du gärna byta bort, och mot vad?",
+        "Vad skulle göra våra vardagskvällar lite bättre?",
+        "Vilken serie eller film har varit bäst att se tillsammans?",
+        "Vilken rutin hos oss vill du aldrig ska försvinna?",
+        "Vad gör du när du vill visa mig omtanke utan ord?",
+        "Vad ska vi sluta stressa över?",
+        "Vilken årstid är bäst för oss, och vad gör vi då?",
+        "Vad har du skrattat mest åt den här veckan?"
+      ],
+      "Drömmar": [
+        "Var tror du att vi bor om tio år, och hur ser det ut?",
+        "Vilket äventyr vill du att vi gör tillsammans?",
+        "Vad vill du att vi ska ha hunnit med till nästa sommar?",
+        "Vilken tradition vill du att vi startar?",
+        "Om vi fick ett år ledigt med full lön, vad gör vi?",
+        "Vad vill du lära dig, och kan jag hjälpa till?",
+        "Vilket land eller vilken stad vill du att vi upptäcker ihop?",
+        "Hur vill du att vi firar nästa stora högtid?",
+        "Vad är en liten dröm du har som vi kan göra av redan i år?",
+        "Vad vill du att vi ska vara kända för bland våra vänner?",
+        "Hur vill du att vi har det när vi är gamla?",
+        "Vad vill du göra mer av och mindre av ihop framöver?"
+      ],
+      "Närhet": [
+        "När känner du dig mest nära mig?",
+        "Vilken beröring tycker du mest om i vardagen?",
+        "Vad är det mest romantiska jag har gjort?",
+        "När tycker du att jag är som mest attraktiv?",
+        "Vad skulle du vilja att vi gjorde oftare när vi är nära?",
+        "Vilken kyss minns du bäst?",
+        "Vad får dig att känna dig trygg med mig?",
+        "Vad är en perfekt dejt för dig, från början till slut?",
+        "Finns det något nytt du är nyfiken på att vi testar?",
+        "Hur vill du helst att jag visar att jag vill ha dig?",
+        "Vilket kompliment från mig minns du?",
+        "Vad gör att du kan slappna av helt med mig?"
+      ],
+      "Skratt": [
+        "Vad var vår pinsammaste stund tillsammans?",
+        "Vilken av mina vanor skulle bli en bra sketch?",
+        "Om vi var ett band, vad skulle vi heta?",
+        "Vilket djur är jag, och vilket är du?",
+        "Vem av oss skulle klara sig längst på en öde ö?",
+        "Vad är det dummaste vi har bråkat om?",
+        "Vilken kändis skulle spela mig i filmen om oss?",
+        "Vilken av mina rätter borde aldrig lagas igen?",
+        "Vad skulle vår dokusåpa heta?",
+        "Vilket ord eller uttryck säger jag för ofta?",
+        "Vilket misslyckat projekt hemma minns du med glädje?",
+        "Om vi bytte liv i en dag, vad gör du först?"
+      ]
+    }
+  },
+  vanner: {
+    sub: "med vänner", mark: "✦", theme: "#c9dcf6",
+    foot: "Alla svarar på samma kort.",
+    who: ["Den som bor närmast börjar", "Den som fyller år härnäst börjar", "Den som drog kortet börjar", "Den som kom sist börjar", "Den som senast var utomlands börjar", "Den som har längst hår börjar", "Personen till vänster om den som drog kortet börjar", "Den som skrattade senast börjar"],
+    style: { "Våra minnen": "", "Lär känna": "alt", "Livet just nu": "", "Tänk om": "inv", "Skratt": "alt", "Heta stolen": "inv" },
+    deck: {
+      "Våra minnen": [
+        "Vilket är ditt första minne av någon här?",
+        "Vilken kväll tillsammans skulle du vilja uppleva igen?",
+        "Vilken resa eller utflykt med gänget är bäst hittills?",
+        "Vad är vårt bästa internskämt, och vem startade det?",
+        "När hjälpte någon här dig utan att du behövde be om det?",
+        "Vilket foto på oss borde ramas in?",
+        "Vilken tradition har vi som du aldrig vill släppa?",
+        "När skrattade du som mest med någon här?",
+        "Vilken plats förknippar du mest med oss?",
+        "Vad har vi gjort tillsammans som du var nervös inför först?",
+        "Vilket sms eller röstmeddelande från någon här har du sparat?",
+        "Hur har vår vänskap förändrats sedan vi träffades?"
+      ],
+      "Lär känna": [
+        "Vad gör dig riktigt glad som de flesta inte vet om?",
+        "Vilket beslut i livet är du gladast över?",
+        "Vem var du i skolan, och vem trodde du att du skulle bli?",
+        "Vad har du ändrat åsikt om de senaste åren?",
+        "Vad är du bra på som du sällan får visa?",
+        "Vilken bok, låt eller film har format dig?",
+        "Vad är det bästa rådet du någonsin har fått?",
+        "Vad tycker du är svårast med att vara vuxen?",
+        "När känner du dig som mest dig själv?",
+        "Vad är du stolt över från det senaste året?",
+        "Vad skulle du göra om du visste att du inte kunde misslyckas?",
+        "Vad önskar du att fler frågade dig om?"
+      ],
+      "Livet just nu": [
+        "Vad tar mest plats i ditt huvud just nu?",
+        "Vad ser du mest fram emot den närmaste månaden?",
+        "Vad har varit veckans bästa ögonblick?",
+        "Finns det något du behöver peppning med just nu?",
+        "Vilken vana försöker du börja med eller sluta med?",
+        "Vad har du upptäckt nyligen som alla här borde testa?",
+        "Vad skulle göra nästa vecka lite enklare för dig?",
+        "Vad har du lärt dig om dig själv i år?",
+        "Vem har betytt mycket för dig på sistone?",
+        "Vad längtar du efter?",
+        "Om du fick en helt ledig dag i morgon, vad gör du?",
+        "Vad vill du att vi frågar dig om nästa gång vi ses?"
+      ],
+      "Tänk om": [
+        "Om vi öppnade ett företag ihop, vad skulle det vara och vem gör vad?",
+        "Om du fick leva i ett annat årtionde, vilket väljer du?",
+        "Om gänget var med i ett tv-program, vilket skulle det vara?",
+        "Om du fick en superkraft, men bara en löjlig, vilken?",
+        "Om vi flyttade till samma by, vad öppnar var och en av oss där?",
+        "Om du kunde bemästra ett språk eller instrument över en natt, vilket?",
+        "Om vi hade en vecka och obegränsad budget, vart åker vi?",
+        "Om du fick äta middag med vem som helst, levande eller död, vem?",
+        "Om du fick byta jobb med någon här i en vecka, med vem?",
+        "Om ditt liv var en film, vad skulle den heta?",
+        "Om du vann en miljon i kväll, vad är det första du gör?",
+        "Om vi skulle skapa en ny högtid, vad firar vi?"
+      ],
+      "Skratt": [
+        "Vilken är din pinsammaste stund som du kan berätta här?",
+        "Vem här skulle överleva längst i en zombieapokalyps?",
+        "Vilken trend har du följt som du ångrar?",
+        "Vilket är ditt mest onödiga köp?",
+        "Vem här skulle bli bäst på dokusåpa, och varför?",
+        "Vad är det konstigaste du har ätit?",
+        "Vilken låt sjunger du när ingen hör?",
+        "Vilket djur skulle var och en här vara?",
+        "Vilken missuppfattning hade du länge som barn?",
+        "Vad är din mest irrationella rädsla?",
+        "Vem här skulle vara sämst på att hålla en hemlighet?",
+        "Vilken kändis har du blivit förväxlad med?"
+      ],
+      "Heta stolen": [
+        "Vad uppskattar du mest hos personen till höger om dig?",
+        "Vilken är din mest kontroversiella matåsikt?",
+        "Vad är något du aldrig har vågat erkänna här?",
+        "Vilken åsikt har du som de flesta här inte delar?",
+        "Vem här har lärt dig något viktigt, och vad?",
+        "Vad tycker du att vi borde göra oftare tillsammans?",
+        "Vilket första intryck hade du av någon här som visade sig vara fel?",
+        "Vilken komplimang skulle du ge var och en här?",
+        "Vad är du hemligt bra på?",
+        "Vad skulle du ändra på i ditt liv om du var helt ärlig?",
+        "Vilken är den största lögnen du har kommit undan med?",
+        "Vem här ringer du först när något går snett?"
+      ]
+    }
+  }
 };
 
 const ALL = "Alla";
-const cats = [ALL, ...Object.keys(DECK)];
-const STYLE = { "Vi två": "", "Lär känna": "alt", "Vardag & mys": "", "Drömmar": "alt", "Närhet": "inv", "Skratt": "alt" };
-let active = ALL, pile = [], history = [], pos = -1;
-
 const $ = id => document.getElementById(id);
 const cardEl = $("card"), chips = $("chips");
+let mode = "par", active = ALL, pile = [], history = [], pos = -1;
+try { const m = localStorage.getItem("soffsamtal-mode"); if (m && MODES[m]) mode = m; } catch (e) {}
 
-function total() { return active === ALL ? Object.values(DECK).flat().length : DECK[active].length; }
+const M = () => MODES[mode];
 function build() {
-  const src = active === ALL ? Object.keys(DECK) : [active];
-  pile = src.flatMap(c => DECK[c].map(q => ({ c, q })));
+  const d = M().deck, src = active === ALL ? Object.keys(d) : [active];
+  pile = src.flatMap(c => d[c].map(q => ({ c, q })));
   for (let i = pile.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pile[i], pile[j]] = [pile[j], pile[i]]; }
   history = []; pos = -1; update();
 }
@@ -221,17 +334,14 @@ function update() {
   $("draw").textContent = pile.length || pos < history.length - 1 ? "Dra ett kort" : "Blanda och börja om";
 }
 function paint(item) {
-  cardEl.className = "card " + (STYLE[item.c] || "");
+  cardEl.className = "card " + (M().style[item.c] || "");
   $("cat").textContent = item.c; $("q").textContent = item.q;
   $("starter").textContent = "";
 }
 function show(item) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { paint(item); return; }
   cardEl.classList.add("out");
-  setTimeout(() => {
-    paint(item); cardEl.classList.add("in");
-    void cardEl.offsetWidth; cardEl.classList.remove("in");
-  }, 260);
+  setTimeout(() => { paint(item); cardEl.classList.add("in"); void cardEl.offsetWidth; cardEl.classList.remove("in"); }, 260);
 }
 function draw() {
   if (pos < history.length - 1) { pos++; show(history[pos]); update(); return; }
@@ -241,27 +351,40 @@ function draw() {
 }
 function back() { if (pos > 0) { pos--; show(history[pos]); update(); } }
 
-cats.forEach((c, i) => {
-  const b = document.createElement("button");
-  b.className = "chip"; b.id = "chip-" + i; b.textContent = c;
-  b.setAttribute("aria-pressed", c === active);
-  b.onclick = () => {
-    active = c;
-    chips.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === b));
-    build(); draw();
-  };
-  chips.appendChild(b);
-});
+function renderChips() {
+  chips.innerHTML = "";
+  [ALL, ...Object.keys(M().deck)].forEach((c, i) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.id = `chip-${mode}-${i}`; b.textContent = c;
+    b.setAttribute("aria-pressed", c === active);
+    b.onclick = () => {
+      active = c;
+      chips.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === b));
+      build(); draw();
+    };
+    chips.appendChild(b);
+  });
+}
+function setMode(m, animate) {
+  mode = m; active = ALL;
+  try { localStorage.setItem("soffsamtal-mode", m); } catch (e) {}
+  document.documentElement.dataset.mode = m;
+  document.querySelector('meta[name="theme-color"]').content = M().theme;
+  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+  $("sub").textContent = M().sub; $("mark").textContent = M().mark;
+  $("foot").firstChild.textContent = M().foot + " ";
+  renderChips(); build();
+  const item = pile.pop(); history.push(item); pos = 0;
+  animate ? show(item) : paint(item); update();
+}
+
+document.querySelectorAll(".mode").forEach(b => b.onclick = () => { if (b.dataset.mode !== mode) setMode(b.dataset.mode, true); });
 $("draw").onclick = draw;
 $("back").onclick = back;
 $("reset").onclick = () => { build(); draw(); };
-$("who").onclick = () => {
-  const opts = ["Du börjar", "Din partner börjar", "Den som är yngst börjar", "Den som drog kortet börjar", "Den som log först börjar"];
-  $("starter").textContent = opts[Math.floor(Math.random() * opts.length)];
-};
-build();
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+$("who").onclick = () => { const o = M().who; $("starter").textContent = o[Math.floor(Math.random() * o.length)]; };
+setMode(mode, false);
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
-
 </body>
 </html>
