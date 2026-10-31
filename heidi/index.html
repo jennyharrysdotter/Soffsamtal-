@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Heidis hitte-på app</title>
+<meta name="theme-color" content="#3D6A5A">
+<meta name="description" content="Förslag på små och stora saker att göra, utifrån Lindome.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+html,body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* Layout: one calm column like a pocket notebook; one warm lamp-coloured button is the only loud thing */
+:root{
+  --bg:#ECEFF2; --surface:#FFFFFF; --ink:#1E2833; --muted:#5A6878; --line:#D5DCE3;
+  --lamp:#E8AE45; --lamp-ink:#2A1E08; --moss:#3D6A5A; --moss-soft:#E1ECE7; --rose:#B4566A;
+  --display:"Young Serif", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131A21; --surface:#1C252F; --ink:#E7ECF1; --muted:#9BA9B7; --line:#2D3946;
+  --lamp:#F0B955; --lamp-ink:#241904; --moss:#86BCA6; --moss-soft:#22342D; --rose:#E48A9C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131A21; --surface:#1C252F; --ink:#E7ECF1; --muted:#9BA9B7; --line:#2D3946;
+  --lamp:#F0B955; --lamp-ink:#241904; --moss:#86BCA6; --moss-soft:#22342D; --rose:#E48A9C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:540px;margin:0 auto;padding-block:28px 56px;display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,8.5vw,40px);line-height:1.08;margin:6px 0 0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:400;font-size:21px;margin:0;text-wrap:balance}
+.letter{background:var(--moss-soft);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px}
+.letter p{margin:0;font-size:15.5px}
+.letter ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;font-size:15.5px}
+.letter .sign{font-family:var(--display);font-size:18px;color:var(--moss)}
+.letter button{align-self:flex-start;background:none;border:0;color:var(--moss);font:600 13px var(--body);padding:4px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.group{display:flex;flex-direction:column;gap:8px}
+.group label{font-size:14px;font-weight:600}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{min-width:0;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;
+  padding:10px 4px;font:500 13.5px var(--body);cursor:pointer;line-height:1.2}
+.seg button[aria-pressed="true"]{border-color:var(--moss);background:var(--moss);color:var(--surface);font-weight:600}
+.go{border:0;background:var(--lamp);color:var(--lamp-ink);font:700 18px var(--body);padding:18px;border-radius:14px;cursor:pointer;
+  box-shadow:0 6px 18px -8px color-mix(in srgb,var(--lamp) 70%,transparent)}
+.install{border:1.5px solid var(--moss);background:var(--surface);color:var(--moss);font:600 15px var(--body);padding:12px;border-radius:12px;cursor:pointer}
+.go:active{transform:translateY(1px)}
+button:focus-visible{outline:3px solid var(--moss);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+.card .what{font-family:var(--display);font-size:25px;line-height:1.18;margin:0;text-wrap:balance}
+.card .why{margin:0;color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;font-weight:600;padding:4px 9px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.tag.zon3{color:var(--rose)}
+.actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:4px}
+.actions button{border-radius:10px;padding:12px 8px;font:600 14.5px var(--body);cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.actions .yes{background:var(--moss);border-color:var(--moss);color:var(--surface)}
+.actions .fav{width:48px;font-size:18px;color:var(--rose)}
+.actions .fav[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:var(--surface)}
+.toast{font-size:14px;color:var(--moss);font-weight:600;min-height:1.2em;margin:0}
+.empty{color:var(--muted);font-size:15px;margin:0}
+.lists{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:20px}
+.count{font-family:var(--display);font-size:42px;line-height:1;color:var(--moss);font-variant-numeric:tabular-nums}
+.countrow{display:flex;align-items:baseline;gap:10px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+li span:first-child{min-width:0}
+li .date{color:var(--muted);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+li button{background:none;border:0;color:var(--moss);font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.events{display:flex;flex-direction:column;gap:10px}
+.evhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ev{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:start;padding:12px 0}
+.ev .day{background:var(--moss-soft);color:var(--moss);border-radius:10px;text-align:center;padding:6px 0;line-height:1.1}
+.ev .day b{display:block;font-family:var(--display);font-weight:400;font-size:22px;font-variant-numeric:tabular-nums}
+.evmonth{font-family:var(--display);font-size:18px;color:var(--moss);padding:18px 0 4px;border-bottom:1px solid var(--line)}
+.evmonth:first-child{padding-top:4px}
+.ev .day small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ev .info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.ev .info strong{font-weight:600;font-size:15.5px}
+.ev .info span{color:var(--muted);font-size:13.5px}
+.ev .info a{color:var(--moss);font-size:13.5px;font-weight:600;text-underline-offset:3px}
+.card a.more{color:var(--moss);font-weight:600;font-size:14.5px;text-underline-offset:3px}
+.foot{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 0}
+@media (prefers-reduced-motion:no-preference){.card{animation:rise .35s ease-out}@keyframes rise{from{transform:translateY(8px)}to{transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="today">Idag</div>
+    <h1>Heidis hitte-på app</h1>
+    <p style="margin:6px 0 0;color:var(--muted);font-size:16px">Vad ska jag göra idag?</p>
+  </header>
+
+  <section class="letter" id="letter">
+    <p><strong>Så här funkar det</strong></p>
+    <ol>
+      <li>Välj hur mycket du orkar, hur mycket tid du har och hur modig du känner dig.</li>
+      <li>Tryck på den gula knappen och se vad dagen har att erbjuda.</li>
+      <li>Gillar du förslaget? Kör! Inte riktigt din grej idag? Tryck igen, appen blir inte sur.</li>
+    </ol>
+    <p>Se förslagen som möjligheter och inte som läxor. Gör dem mindre, större eller helt på ditt eget sätt. Tryck på ”Jag gör det” så samlas allt du testat längst ner, och på hjärtat för att spara favoriter.</p>
+    <button id="hideLetter" type="button">Göm instruktionen</button>
+  </section>
+  <button id="showLetter" type="button" hidden style="align-self:flex-start;background:none;border:0;color:var(--moss);font:600 13px var(--body);cursor:pointer;padding:0">Visa instruktionen</button>
+
+  <div class="group">
+    <label id="l-ork">Hur mycket orkar du idag?</label>
+    <div class="seg" data-key="ork" role="group" aria-labelledby="l-ork">
+      <button type="button" data-v="1">Lite</button><button type="button" data-v="2">Lagom</button><button type="button" data-v="3">Mycket</button><button type="button" data-v="0">Vet ej</button>
+    </div>
+  </div>
+  <div class="group">
+    <label id="l-tid">Hur mycket tid har du?</label>
+    <div class="seg" data-key="tid" role="group" aria-labelledby="l-tid">
+      <button type="button" data-v="1">En kvart</button><button type="button" data-v="2">Ett par timmar</button><button type="button" data-v="3">Hela dagen</button><button type="button" data-v="0">Spelar ingen roll</button>
+    </div>
+  </div>
+  <div class="group">
+    <label id="l-zon">Hur modig känner du dig?</label>
+    <div class="seg" data-key="zon" role="group" aria-labelledby="l-zon">
+      <button type="button" data-v="1">Tryggt</button><button type="button" data-v="2">Lite nytt</button><button type="button" data-v="3">Utmana mig</button><button type="button" data-v="0">Överraska</button>
+    </div>
+  </div>
+
+  <button class="go" id="go" type="button">Ge mig ett förslag</button>
+  <button class="install" id="install" type="button" hidden>Lägg appen på hemskärmen</button>
+
+  <section class="card" id="card" aria-live="polite">
+    <p class="eyebrow" style="margin:0">Exempel på förslag</p>
+    <h2 class="what" id="what"></h2>
+    <p class="why" id="why"></p>
+    <div class="tags" id="tags"></div>
+    <a class="more" id="more" href="#" target="_blank" rel="noopener" hidden>Läs mer om evenemanget</a>
+    <div class="actions" id="actions">
+      <button class="yes" id="yes" type="button">Jag gör det</button>
+      <button id="no" type="button">Inte idag</button>
+      <button class="fav" id="fav" type="button" aria-pressed="false" aria-label="Spara som favorit">♡</button>
+    </div>
+    <p class="toast" id="toast"></p>
+  </section>
+
+  <section class="events">
+    <div class="evhead"><h2>Händer snart</h2><span class="eyebrow" id="updated">Uppdaterad 25 okt</span></div>
+    <ul id="evlist"></ul>
+    <p class="empty" id="evEmpty" hidden>Inga inlagda evenemang just nu. Be Jenny uppdatera listan.</p>
+  </section>
+
+  <section class="lists">
+    <div class="countrow"><span class="count" id="count">0</span><h2>saker jag har gjort</h2></div>
+    <ul id="done"></ul>
+    <p class="empty" id="doneEmpty">Här samlas allt du gjort. Varje liten sak räknas.</p>
+    <h2 style="margin-top:8px">Mina favoriter</h2>
+    <ul id="favs"></ul>
+    <p class="empty" id="favEmpty">Tryck på hjärtat på ett förslag du gillar, så hamnar det här.</p>
+  </section>
+
+  <p class="foot">Gjord med kärlek av Jenny</p>
+</div>
+
+<script>
+/* ork: 1 lite, 2 lagom, 3 mycket · tid: 1 kort, 2 några timmar, 3 heldag · zon: 1 trygg, 2 lite nytt, 3 utmaning
+   var: hemma | nära (Lindome/gång) | bil | stan (Göteborg/pendel) · m: månader då det passar */
+const A=[
+// Hemma, trygga
+["Läs ett kapitel med en kopp te","Bädda in dig i soffan, tänd ett ljus och läs bara ett kapitel. Inget mer krävs.",1,1,1,"hemma"],
+["Gör en lista: böcker jag vill läsa","Skriv ner tio böcker du är nyfiken på. Det blir din egen önskelista för hösten.",1,1,1,"hemma"],
+["Läs en bok i en genre du aldrig läser","Deckare, fantasy, biografi eller poesi. Ta något helt annat än vanligt, bara för att se.",1,2,2,"hemma"],
+["Ladda ner Biblio och låna en e-bok","Med lånekort från biblioteket kan du låna e-böcker och ljudböcker gratis i appen Biblio.",1,1,1,"hemma"],
+["Skriv tre rader om dagen","Bara tre rader: vad hände, vad kände du, en sak som var okej. Ingen ska läsa det.",1,1,1,"hemma"],
+["Laga något du aldrig lagat förut","Välj ett recept med max sju ingredienser. Det får gärna bli konstigt.",2,2,2,"hemma"],
+["Baka något som doftar","Kanelbullar, sockerkaka eller bara scones. Doften gör något med en lägenhet.",2,2,1,"hemma"],
+["Byt plats på något hemma","Flytta en fåtölj, en lampa eller en tavla. Ett nytt hörn att läsa i kan göra skillnad.",2,1,1,"hemma"],
+["Rensa en enda låda","Bara en. När den är klar får du sluta.",1,1,1,"hemma"],
+["Lägg ett pussel med en ljudbok på","Händerna sysselsatta, huvudet i en berättelse. Bra för tunga kvällar.",1,2,1,"hemma"],
+["Skicka en bild till Jenny","Ta en bild på något du ser just nu, vad som helst, och skicka till mig.",1,1,1,"hemma"],
+["Skriv ett riktigt brev","Med penna, till någon. Det behöver inte skickas, men det får.",1,1,2,"hemma"],
+["Gör en yogavideo för nybörjare","Sök på YouTube efter 15 minuters mjuk yoga. Rulla ut en filt om du inte har matta.",1,1,2,"hemma"],
+["Ta ett långt bad med en bok","Varmt vatten, en bok du inte är rädd att blöta ner. Ingen brådska.",1,2,1,"hemma"],
+["Teckna det du ser genom fönstret","Det ska inte vara fint. Rita bara det du ser i tio minuter.",1,1,2,"hemma"],
+["Skriv första sidan av din egen berättelse","Du som läser så mycket: hur skulle din bok börja? Skriv en sida.",2,1,3,"hemma"],
+["Plantera tulpanlökar i en kruka","Oktober är perfekt. Ställ krukan ute, så får du en överraskning i vår.",1,1,1,"hemma",[9,10,11]],
+["Gör en egen spellista för hösten","Tio låtar som passar mörka kvällar med en bok.",1,1,1,"hemma"],
+
+// Nära Lindome
+["Gå en runda längs Lindomeån","Lyssna på vattnet. Gå så länge det känns bra och vänd sedan.",1,1,1,"nära"],
+["Gå till Lindome bibliotek","Bläddra utan mål. Låna det första som fångar ögat, även om det känns fel.",1,1,1,"nära"],
+["Fråga bibliotekarien om ett boktips","Berätta vad du senast gillade och be om något liknande. De älskar sådana frågor.",1,1,2,"nära"],
+["Fråga om biblioteket har bokcirkel","Många bibliotek har läsecirklar eller författarbesök. Bara fråga, du behöver inte anmäla dig än.",1,1,2,"nära"],
+["Promenera i skymningen","Gå ut precis när det börjar mörkna. Titta in i upplysta fönster.",1,1,1,"nära"],
+["Lyssna på en ljudbok under en promenad","Gå tills kapitlet är slut. Berättelsen bestämmer hur långt.",1,2,1,"nära"],
+["Fotografera fem gula saker","Gå ut och leta. Det blir som en skattjakt och tankarna får vila.",1,1,1,"nära"],
+["Köp en blomma till dig själv","En krukväxt eller en bukett. Ställ den där du läser.",1,1,1,"nära"],
+["Ta en fika ute med din bok","Sätt dig på ett kafé och läs i en timme bland andra människor.",1,2,2,"nära"],
+["Gå i Sandsjöbacka naturreservat","Stora öppna vyer, ljung och sjöar nära Lindome. Bra för att tänka klart.",2,2,1,"nära"],
+["Gå en bit du aldrig gått","Ta av på en väg du alltid passerar men aldrig valt. Se vart den leder.",2,1,2,"nära"],
+
+// Bil
+["Åk till Gunnebo slott","Gå i trädgårdarna och fika på kaféet. Lugnt, vackert och nära.",2,2,1,"bil"],
+["Promenera i Kvarnbyn i Mölndal","Gamla industrimiljöer vid forsen. Mölndals museum ligger där också.",2,2,2,"bil"],
+["Kör till havet i Särö","Gå i Särö Västerskog ner mot vattnet. Havsluft hjälper mot det mesta.",2,2,1,"bil"],
+["Gå på Fjärås Bräcka","En gammal israndsrygg med utsikt över Lygnern. Ta med termos.",2,2,2,"bil"],
+["Gå runt Vallda Sandö","Klippor, hav och vind. Ta med något att sitta på och en bok.",2,2,1,"bil"],
+["Besök Tjolöholms slott","Gå i parken och ner till havet. Kolla öppettider för kaféet innan.",2,3,2,"bil"],
+["Kör till en ort du aldrig varit i","Öppna kartan, välj en liten plats inom 40 minuter och kör dit. Gå runt en timme.",3,3,3,"bil"],
+["Dagstur till Varberg","Fästningen, strandpromenaden och en fika. En hel dag som känns som semester.",3,3,2,"bil"],
+["Dagstur till Marstrand","Ta färjan över, gå runt ön och upp till fästningen.",3,3,3,"bil"],
+["Kör en sväng till Kungsbacka och gå på torget","Lagom stort, lagom mycket folk. Gå in i en bokhandel eller ett kafé.",2,2,1,"bil"],
+["Gå på loppis eller second hand","Leta efter en bok eller en kopp du inte behöver men vill ha.",2,2,1,"bil"],
+["Bada i en simhall","Simma några längder eller bara ligg i bubbelpoolen. Kroppen mår bra av det.",2,2,2,"bil"],
+
+// Stan / Göteborg
+["Ta pendeln till Göteborg och gå i Haga","Kafé, gamla trähus och en kanelbulle. Pendeln går från Lindome station.",2,2,1,"stan"],
+["Besök Göteborgs stadsbibliotek","Ett stort, ljust bibliotek vid Götaplatsen. Sätt dig vid ett fönster och läs.",2,2,1,"stan"],
+["Gå på Göteborgs konstmuseum","Gå tills du hittar en tavla du vill titta på länge. Stanna där.",2,2,2,"stan"],
+["Gå i Botaniska trädgården","Växthusen är fina även när det är grått och kallt ute.",2,2,1,"stan"],
+["Gå på Röhsska museet","Design, mode och föremål. Ofta lugnt och inte så mycket folk.",2,2,2,"stan"],
+["Gå på bio ensam","Välj en film och sätt dig i mörkret. Ingen behöver prata efteråt.",2,2,2,"stan"],
+["Lyssna på en konsert i en kyrka","Många kyrkor har gratis konserter. Sök på vad som händer i helgen.",2,2,2,"stan"],
+["Gå på ett författarsamtal","Bibliotek och bokhandlar har ofta författarbesök. Sitt längst bak och lyssna.",2,2,3,"stan"],
+["Ta båten ut i skärgården","Spårvagn till Saltholmen och sen båt till Vrångö eller Styrsö. Med vanligt Västtrafik-kort.",3,3,2,"stan"],
+["Se en föreställning på teatern","Köp en biljett till något på Stadsteatern eller en mindre scen.",2,3,3,"stan"],
+["Besök Lisebergs julmarknad","Ljus, glögg och folk. Gå en runda och åk hem när du vill.",2,2,2,"stan",[11,12]],
+["Gå en guidad stadsvandring","Lär dig något om stan och gå bland andra som också är nyfikna.",2,2,3,"stan"],
+
+// Utmaningar med människor
+["Gå på ett möte i en bokcirkel","Du älskar böcker. Det gör de också. Du behöver inte säga mycket första gången.",2,2,3,"nära"],
+["Anmäl dig till en kurs","Keramik, akvarell, skrivande eller språk. Kolla studieförbunden i Mölndal och Kungsbacka.",2,1,3,"hemma"],
+["Fråga om att bli volontär","Röda korset, Stadsmissionen eller en läxhjälp. Bara fråga hur det går till.",2,1,3,"hemma"],
+["Bjud någon på fika","En kollega, en granne, en gammal bekant. Ett kort meddelande räcker.",2,2,3,"hemma"],
+["Boka en natt på ett hotell med en bok","Åk någonstans i närheten, ät god mat och läs i en säng som inte är din.",3,3,3,"bil"],
+["Ring någon du inte pratat med länge","En kusin, en gammal vän. Säg bara att du tänkte på dem.",1,1,3,"hemma"],
+["Se fotoutställningen på Fjärås Bräcka","Naturum visar bilder på djuren i skogarna runt Kungsbacka fram till 20 december. Gå en runda efteråt.",2,2,1,"bil",[10,11,12]],
+["Se miniatyrutställningen i Mölndal","Betraktelser i miniatyr på Mölndals stadsmuseum i Kvarnbyn. Pågår till slutet av januari.",2,2,1,"bil",[10,11,12,1]],
+
+// Större saker och resor
+["Åk och hälsa på Jenny","Packa en väska och några böcker. Ta tåget eller låna bilen och stanna några dagar. Jenny väntar.",3,3,2,"resa"],
+["Kolla tåg till Jenny","Bara titta på avgångar och priser. Du behöver inte boka något idag.",1,1,2,"hemma"],
+["Bestäm ett datum för att hälsa på Jenny","Skicka ett sms till Jenny med ett förslag på helg. Resten löser vi tillsammans.",1,1,2,"hemma"],
+["Åk på en helg till Köpenhamn","Tåget från Göteborg tar omkring fyra timmar. Bokhandlar, kaféer och en ny stad att gå vilse i.",3,3,3,"resa"],
+["Hyr en stuga vid en sjö över en natt","Bara du, en bok, en brasa och tystnad. Finns många inom en timmes bilväg.",3,3,3,"resa"],
+["Gör en egen bokresa","Välj en plats som en bok du älskar utspelar sig på, eller en författares hembygd, och åk dit.",3,3,3,"resa"],
+["Åk tåg till en stad du aldrig sett","Välj en stad inom tre timmar, till exempel Lund, Jönköping eller Karlstad. Gå runt, ät lunch och åk hem.",3,3,3,"resa"],
+["Res till Oslo över en helg","Bussen eller tåget från Göteborg tar några timmar. Operan, Deichman-biblioteket och vattnet.",3,3,3,"resa"],
+
+// Idet: lugnt, ensamt och på riktigt
+["Sitt under ett träd och bara var","Som Ferdinand. Hitta ett träd, sätt dig och lukta på luften. Inget mer.",1,1,1,"nära"],
+["Gör en Skalmandag","Mat när matklockan säger mat, sömn när sovklockan säger sov. Lyssna på kroppen en hel dag.",1,3,1,"hemma"],
+["Bygg ditt eget ide","Gör det perfekta läshörnet. Filt, kudde, lampa, te och en hög böcker inom räckhåll.",1,2,1,"hemma"],
+["Gör ingenting i en timme","Med gott samvete. Ligg och titta i taket, lyssna på regnet eller bara andas.",1,1,1,"hemma"],
+["Ring Jenny och prata länge","Inte bara hur mår du. Prata om en bok, ett minne eller något som spelar roll.",1,2,1,"hemma"],
+["Skriv ett långt brev till någon du litar på","Ett riktigt brev, där du får säga det du verkligen tänker.",1,2,2,"hemma"],
+["Bjud en enda person på promenad","Inte en grupp, bara en. Gå och prata, eller gå tyst tillsammans.",2,2,3,"nära"],
+["Läs en bok om att börja om","Romaner om människor som bygger nytt efter något som tagit slut. Fråga bibliotekarien om tips.",1,2,1,"hemma"],
+["Skriv ner det du saknar och det du inte saknar","Två listor. Ingen annan ska läsa dem. Se vad som dyker upp.",1,1,2,"hemma"],
+["Gå ut och titta på stjärnorna","En klar kväll, bort från gatlyktorna. Ta med en filt och en termos.",1,1,1,"nära",[9,10,11,12,1,2,3]],
+["Tänd en brasa eller levande ljus","Gör mörkret till något mysigt. Sätt på lugn musik och läs vid ljuset.",1,1,1,"hemma",[10,11,12,1,2,3]],
+["Gå i skogen en dimmig morgon","Tidigt, innan någon annan är ute. Det är tyst och nästan magiskt.",2,1,2,"nära",[9,10,11]],
+["Lyssna på en ljudbok i badkaret","Varmt vatten, mjuk röst och en berättelse. Ingen brådska.",1,2,1,"hemma"],
+["Gör en egen sorgeårsbok","En anteckningsbok bara för det här året. Skriv, klistra in, rita. Den får rymma allt.",1,1,2,"hemma"],
+["Åk ensam till havet och skriv","Sätt dig vid vattnet med ett block. Skriv det som kommer, även om det inte blir vackert.",2,2,2,"bil"],
+["Gå till en kyrka när den är tom","Många kyrkor är öppna dagtid. Sätt dig en stund i tystnaden, troende eller inte.",1,1,1,"nära"],
+["Ha ett djupt samtal med en bok","Läs långsamt och stryk under. Skriv dina egna tankar i marginalen.",1,2,1,"hemma"],
+
+// Mellanting: stretcha zonen, på introvertens villkor
+["Ställ en fråga på ett författarsamtal","Räck upp handen och fråga en sak. En enda mening räcker, och sen kan du luta dig tillbaka.",2,2,3,"bil"],
+["Gå en kurs där händerna har fullt upp","Keramik, bokbindning eller akvarell. Man pratar lite, men mest om det man gör.",2,2,3,"bil"],
+["Gå på bokcirkel en gång, bara för att lyssna","Säg att du är ny och mest vill höra på. Djupa samtal om böcker är din grej.",2,2,3,"nära"],
+["Ät middag ensam på en riktig restaurang","Ta med en bok, beställ förrätt och dessert. Ensam men inte ensam.",2,2,2,"stan"],
+["Gå på bio ensam en lördagskväll","Lördag, mitt i folkvimlet. Popcorn och en bra film, helt på dina villkor.",2,2,2,"stan"],
+["Res ensam en natt till en ny stad","Hotell, en promenad, en middag och en bok. Ett litet äventyr du klarar av själv.",3,3,2,"resa"],
+["Hör av dig till någon du saknar","En gammal vän du tappat bort. Bara skriv att du tänkte på hen.",1,1,3,"hemma"],
+["Bli bokvolontär","Fråga biblioteket om läsombud eller högläsning för äldre. Ett lugnt sätt att göra skillnad.",2,2,3,"nära"],
+["Prova en yinyoga- eller meditationsklass","Ingen pratar, alla blundar. Du är bland andra utan att behöva säga något.",2,2,3,"bil"],
+["Säg ja till nästa inbjudan","Vad det än är. Bestäm i förväg att du får gå hem efter en timme.",2,2,3,"hemma"],
+["Prova något du alltid sagt att du inte gillar","Sushi, jazz, en deckare, en skräckfilm. Kanske hade du fel, kanske inte.",1,2,2,"hemma"],
+["Gå in i en butik du aldrig skulle gå in i","En skivaffär, en tebutik eller en hobbyaffär. Fråga personalen vad de tycker om bäst.",2,1,3,"stan"],
+["Anmäl dig till en skrivarkurs","Du som läser så mycket har säkert en berättelse inom dig. Det finns kurser på distans också.",1,1,3,"hemma"],
+["Bada kallbad en gång","Ett dopp i havet, även i november. Bastu efteråt om det finns. Du kommer känna dig levande.",2,2,2,"bil"],
+["Sitt kvar och prata efter ett evenemang","Bara fem minuter. Fråga personen bredvid vad hen tyckte.",2,2,3,"bil"],
+
+// Mellanting: knyta kontakter, i lagom dos
+["Gå med i en studiecirkel som ses varje vecka","Samma lilla grupp varje gång gör att man lär känna varandra på riktigt, utan mingel. Kolla ABF, Studiefrämjandet eller Vuxenskolan.",2,2,3,"bil"],
+["Gå på bokcirkel tre gånger","Första gången lyssnar du. Andra gången säger du en sak. Tredje gången känner du igen folk.",2,2,3,"nära"],
+["Börja sjunga i kör","Man sjunger tillsammans och pratar lite i pausen. Fråga Lindome församling eller studieförbunden om de har en kör för nybörjare.",2,2,3,"nära"],
+["Fråga någon på kursen om en fika efteråt","Bara en person, den som verkade trevligast. Det värsta som kan hända är ett nej tack.",2,1,3,"bil"],
+["Bli volontär tillsammans med andra","Röda korsets second hand, Stadsmissionen eller en läxhjälp. Man har en uppgift och lär känna de andra på vägen.",2,2,3,"bil"],
+["Gå med i en vandringsgrupp","Man går bredvid varandra och pratar lite eller inget. Kolla om Friluftsfrämjandet har en grupp i Mölndal eller Kungsbacka.",2,3,3,"bil"],
+["Säg ja till en kollegas lunch","Eller fråga själv någon på jobbet om ni ska äta tillsammans.",2,1,3,"hemma"],
+["Bjud hem en person på middag","En enda gäst, något enkelt i ugnen. Nära samtal vid ditt eget bord.",2,2,3,"hemma"],
+["Starta en egen bokcirkel för två","Fråga en bekant om ni ska läsa samma bok och ses och prata om den.",1,1,3,"hemma"],
+["Ring en släkting du inte pratat med på länge","En kusin, en moster. Fråga hur de har det och om ni kan ses.",1,1,3,"hemma"],
+["Gå på en kurs i ett språk och öva med andra","Italienska eller spanska på studieförbund. Man måste prata, men alla är lika dåliga.",2,2,3,"bil"],
+["Ge en komplimang till någon du inte känner","Till kassören, bibliotekarien eller någon på bussen. Se vad som händer.",1,1,3,"nära"],
+["Gå på en träff för nyseparerade","Det finns samtalsgrupper för den som går igenom en separation. Där förstår alla.",2,2,3,"bil"],
+["Skaffa en promenadkompis","Fråga en granne eller bekant om ni vill gå en fast runda en gång i veckan.",2,1,3,"nära"],
+["Gå på en dansklass för nybörjare","Bugg, lindy hop eller salsa. Man byter partner och behöver inte prata mycket.",2,2,3,"bil"],
+["Häng med på ett sällskapsspel","Biblioteket och spelbutiker har spelkvällar. Spelet gör att samtalet kommer av sig självt.",2,2,3,"nära"],
+
+// Fler hemma
+["Läs om en bok du älskade som ung","Plocka fram en gammal favorit. Se vad du märker nu som du inte märkte då.",1,2,1,"hemma"],
+["Läs en novell i ett enda svep","En hel berättelse på en halvtimme. Ett litet avslut som känns bra.",1,1,1,"hemma"],
+["Skriv ner fem saker du är bra på","Små saker räknas. Att laga god soppa, att lyssna, att hitta bra böcker.",1,1,2,"hemma"],
+["Skriv en recension av senaste boken","Ge den betyg och skriv tre meningar. Spara dem i en egen läsdagbok.",1,1,1,"hemma"],
+["Starta en läsdagbok","Ett vanligt block räcker. Titel, datum och en mening om vad boken gjorde med dig.",1,1,1,"hemma"],
+["Lär dig tio ord på ett nytt språk","Ladda ner Duolingo eller liknande och kör en lektion. Italienska kanske?",1,1,2,"hemma"],
+["Se en klassisk film du aldrig sett","Casablanca, Amélie eller något på SVT Play. Gör popcorn ordentligt.",1,2,1,"hemma"],
+["Lyssna på en podd om böcker","Sök på bokpoddar i din poddapp. Bra sällskap när du gör annat.",1,1,1,"hemma"],
+["Sortera dina böcker på ett nytt sätt","Efter färg, efter känsla eller efter vilka du vill läsa igen. Bokhyllan blir ny.",1,2,1,"hemma"],
+["Laga en rätt från ett land du vill besöka","Japansk ramen, grekisk moussaka eller marockansk tagine. Res med smaklökarna.",2,2,2,"hemma"],
+["Gör en egen soppa på det som finns hemma","Allt i en kastrull, lite buljong och kryddor. Ofta blir det bättre än man tror.",1,1,1,"hemma"],
+["Skriv en lista över saker du vill göra innan sommaren","Inga krav. Bara en lista att titta på när du vill ha idéer.",1,1,2,"hemma"],
+["Måla med akvarell","Köp en billig ask färger. Måla himlen, en kopp eller bara färgfläckar.",1,2,2,"hemma"],
+["Dansa till tre låtar i köket","Ingen ser dig. Höj volymen och rör dig som du vill.",1,1,2,"hemma"],
+["Testa en meditation i tio minuter","Sök på en guidad meditation på YouTube eller Spotify. Lägg dig ner och bara lyssna.",1,1,2,"hemma"],
+["Skriv ett tackbrev till en författare","Berätta vad boken betydde. Många författare har mejl eller går att nå via förlaget.",1,1,3,"hemma"],
+["Gör en tidskapsel till dig själv","Skriv ett brev till dig själv om ett år. Försegla och lägg undan.",1,1,2,"hemma"],
+["Börja på ett broderi eller stickning","Ett nybörjarkit eller en YouTube-video. Bra för händerna medan en ljudbok går.",1,2,2,"hemma"],
+["Gör ett eget fotoalbum i mobilen","Välj ut de tio finaste bilderna från i år och lägg dem i ett eget album.",1,1,1,"hemma"],
+["Släktforska en kväll","Börja med dina mor- och farföräldrar. Det finns gratis sajter att starta med.",1,2,2,"hemma"],
+["Skriv en dikt","Den får vara kort och dålig. Fyra rader om något du såg idag.",1,1,3,"hemma"],
+["Prova att lyssna på en opera","Välj en känd, till exempel La Bohème, och läs handlingen först. Låt musiken ta över.",1,2,2,"hemma"],
+
+// Fler nära Lindome
+["Gå till Lindome station och se tågen gå","Köp en kaffe och titta på folk. Ibland räcker det att vara bland andra.",1,1,1,"nära"],
+["Ta pendeln ett stopp och gå hem","Kliv av i Kållered eller Anneberg och promenera tillbaka.",2,2,2,"nära"],
+["Ta en kvällspromenad med pannlampa","Mörker blir mysigt med rätt ljus. Gå en runda du känner väl.",1,1,2,"nära"],
+["Plocka en bukett av höstlöv och kvistar","Ställ den i en vas hemma. Gratis och vackert.",1,1,1,"nära",[9,10,11]],
+["Leta efter svamp i skogen","Ta med en korg och en svampbok. Plocka bara det du säkert känner igen.",2,2,2,"nära",[8,9,10]],
+["Gå till biblioteket och läs tidningar","Sätt dig med dagens tidningar och tidskrifter. Lugnt och gratis.",1,1,1,"nära"],
+["Köp en bakelse och ät den på en bänk","Lyxa till det en vanlig dag. Titta på det som händer runt omkring.",1,1,1,"nära"],
+["Gå på second hand i Lindome","Leta efter en bok med en dedikation i. Fundera på vem som skrev den.",1,1,1,"nära"],
+["Ge bort en bok du gillat","Lämna den på ett kafé eller i en bokbytarhylla med en lapp: Läs mig.",1,1,2,"nära"],
+
+// Fler med bil
+["Gå runt Rådasjön","En fin runda i Mölndal, platt och lätt. Kaffe i termosen.",2,2,1,"bil"],
+["Gå i Äskhults by","Ett gammalt bevarat bondesamhälle söder om Kungsbacka. Som att kliva in i en roman.",2,2,1,"bil"],
+["Se solnedgången i Gottskär","Kör ut på Onsalahalvön och se solen gå ner över havet.",2,2,1,"bil"],
+["Gå på Kulturhuset Fyren i Kungsbacka","Bibliotek, utställningar och kafé under samma tak.",2,2,1,"bil"],
+["Ta en fika i Hovås","Kör längs kusten, fika och titta ut över vattnet.",2,2,1,"bil"],
+["Kör en långsam väg utan mål","Sätt på en ljudbok och kör de små vägarna. Stanna där det ser fint ut.",2,2,2,"bil"],
+["Köp ägg eller äpplen i en gårdsbutik","Det finns många längs vägarna runt Kungsbacka. Prata lite med den som säljer.",2,2,2,"bil"],
+["Gå på konstrunda eller ett galleri","Sök på gallerier i Kungsbacka eller Mölndal. Titta, och fråga om en tavla du gillar.",2,2,2,"bil"],
+["Prova på keramik en kväll","Studieförbunden har ofta drop-in eller korta kurser i drejning.",2,2,3,"bil"],
+["Ta ett pass i varmbadet","Ligg i varmt vatten och låt kroppen slappna av. Simhallar har ofta separata tider.",2,2,1,"bil"],
+
+// Fler i Göteborg
+["Gå på Världskulturmuseet","Gratis entré och ofta spännande utställningar om världen.",2,2,2,"stan"],
+["Gå på Naturhistoriska museet","Valen, djuren och de gamla montrarna. Lugnt och lite magiskt.",2,2,1,"stan"],
+["Ät lunch i Saluhallen","Gå runt, titta på allt och välj något du aldrig ätit förut.",2,2,2,"stan"],
+["Gå i Slottsskogen","Djuren, dammen och de stora träden. Ta med en bok och sätt dig på en bänk.",2,2,1,"stan"],
+["Gå i ett antikvariat","Det finns flera i Göteborg. Låt dig fastna bland gamla böcker.",2,2,1,"stan"],
+["Gå på Universeum","Regnskogen inomhus är varm och grön även mitt i november.",2,2,2,"stan"],
+["Ta spårvagnen till ändhållplatsen","Välj en linje, åk hela vägen och gå runt där du kliver av.",2,2,3,"stan"],
+["Gå på en föreläsning på universitetet","Göteborgs universitet har öppna föreläsningar. Kolla deras kalender.",2,2,3,"stan"],
+["Gå runt Delsjön","En klassisk promenad i skogen precis utanför stan.",2,2,1,"stan"],
+["Se en matiné på Göteborgsoperan","Eftermiddagsföreställningar är ofta billigare och lugnare.",2,3,3,"stan"],
+];
+
+/* Evenemang: [datum, tid, titel, beskrivning, plats, var, ork, zon, länk] */
+const E=[
+["2026-10-27","18:00","Poesi från Ukraina: Julia Musakovska","Poeten läser sina dikter och samtalar om livet i krigets skugga. Dikterna läses också på svenska.","Göteborgs stadsbibliotek","stan",2,2,"https://www.goteborgslitteraturhus.se/event/c-o-goteborgs-stadsbibliotek-poesi-fran-ukraina-julia-musakovska/"],
+["2026-10-28","18:00","Shared reading i Gathenhielmska huset","Max åtta personer läser en novell och en dikt högt tillsammans och pratar om dem över en kaffe. Gratis, inga förberedelser, anmäl dig via mejl före kl 12 samma dag. Gruppen ses varje onsdag i höst.","Gathenhielmska huset, Göteborg","stan",2,3,"https://www.goteborgslitteraturhus.se/event/shared-reading-i-gathenhielmska-huset-31/"],
+["2026-10-29","17:30","Quizkväll i Forscaféet","En lugn quiz för vuxna på museets kafé, där du tävlar för dig själv men kan sitta bland andra. Fri entré och ingen anmälan.","Mölndals stadsmuseum","bil",2,3,"https://www.molndal.se/molndals-stadsmuseum/besok-museet/pa-gang/evenemang/2026-10-01-quizkvall-i-forscafeet"],
+["2026-10-30","19:30","En hyllning till Povel och Monica Z","Kvällskonsert med visor och jazz.","Kungsbacka Teater","bil",2,2,"https://kungsbackateater.se/program-och-biljetter/importerade-evenemang/en-hyllning-till-povel--monica-z"],
+["2026-11-03","12:00","Sopplunch: Tro och vetande","Ät soppa vid långbord i Lindome och lyssna sedan på professor Hans-Olof Andrén. Kostar 40 kr och kräver ingen anmälan.","Lindome församlingscentrum","nära",1,3,"https://www.svenskakyrkan.se/lindome/soppluncher"],
+["2026-11-03","18:00","Författarsamtal med Klas Östergren","Samtal med författaren bakom Gentlemen. Fri entré.","Kungsbacka Teater","bil",2,2,"https://kungsbackateater.se/program-och-biljetter/importerade-evenemang/forfattarsamtal---klas-ostergren"],
+["2026-11-04","18:00","Tre damer i Lindome","Kajsa och Gerd Karlsson sjunger och berättar om tre kvinnor ur Lindomes historia. Kaffe och tårtbuffé ingår, gratis.","Börjesgården, Lindome","nära",1,3,"https://www.sv.se/kurser-och-evenemang/ovrigt/foredrag-om-tre-damer-i-lindome-mor-inga-lotta-djupekarr-och-pigan-anna-lena-62180"],
+["2026-11-04","18:00","Shared reading, andra gången","Gå tillbaka till samma lilla läsgrupp en vecka senare. Andra gången känner du igen ansiktena och kan säga lite mer, om du vill. Anmäl dig via mejl före kl 12.","Gathenhielmska huset, Göteborg","stan",2,3,"https://www.goteborgslitteraturhus.se/event/shared-reading-i-gathenhielmska-huset-32/"],
+["2026-11-05","18:00","Musiken där jag bor","Livemusik med stråkinstrument på museet.","Mölndals stadsmuseum","bil",2,2,"https://www.molndal.se/molndals-stadsmuseum/besok-museet/pa-gang/evenemang/2026-10-01-musiken-dar-jag-bor"],
+["2026-11-07","16:00","Lördagsmusik med John Elenius","Klassisk gitarr i Lindome kyrka, med spansk musik och koraler av Bach. Sätt dig i en bänk och låt tonerna fylla rummet.","Lindome kyrka","nära",1,1,"https://www.svenskakyrkan.se/lindome/lordagsmusik-john-elenius"],
+["2026-11-12","18:00","Smaker vi ärver","Föreläsning om mat, människor och kulturarv.","Mölndals stadsmuseum","bil",2,2,"https://www.molndal.se/molndals-stadsmuseum/besok-museet/pa-gang/evenemang/2026-10-12-smaker-vi-arver---om-mat-manniskor-och-kulturarv"],
+["2026-11-14","14:00","Västkustens historia i bilder","Författaren Kristian Wedel visar bilder på hjulångare, fiskare och strandade skepp från förr. Fri entré, men anmäl dig senast dagen innan.","Mölndals stadsmuseum","bil",2,2,"https://www.molndal.se/molndals-stadsmuseum/besok-museet/pa-gang/evenemang/2026-10-08-kristian-wedel---vastkustens-historia-i-bilder"],
+["2026-11-24","12:00","Sopplunch: möt konstnären Marianne Kanter","Ät soppa i gott sällskap och lyssna när Marianne Kanter berättar om sin bildkonst. Soppluncherna är varje tisdag, så kommer du ofta blir ansiktena snart bekanta.","Lindome församlingscentrum","nära",1,3,"https://www.svenskakyrkan.se/lindome/soppluncher"],
+["2026-11-28","11:00","Jul i Lindome centrum","Julmarknad i centrumparken med glögg, hantverk, fika och sång, kl 11–14.","Lindome centrum","nära",1,2,"https://www.molndal.se/evenemang/evenemang/2026-06-24-jul-i-lindome-centrum"],
+["2026-12-13","18:00","Lucia i Lindome kyrka","Luciakonsert i kyrkan. Ljus och sång i mörkret.","Lindome kyrka","nära",1,1,"https://www.svenskakyrkan.se/lindome/lucia-i-lindome-kyrka"],
+];
+
+const ZON=["","Tryggt","Lite nytt","Utmaning"], ORK=["","Lite ork","Lagom ork","Mycket ork"], TID=["","En stund","Ett par timmar","Halv- eller heldag"];
+const VAR={hemma:"Hemma",nära:"Nära Lindome",bil:"Med bil",stan:"Göteborg",resa:"Resa"};
+const WD=["sön","mån","tis","ons","tors","fre","lör"], MO=["jan","feb","mars","april","maj","juni","juli","aug","sep","okt","nov","dec"];
+function evDate(e){return new Date(e[0]+"T"+e[1]+":00")}
+function upcoming(){const t0=new Date();t0.setHours(0,0,0,0);return E.filter(e=>evDate(e)>=t0).sort((a,b)=>evDate(a)-evDate(b))}
+function evLabel(e){const d=evDate(e);return WD[d.getDay()]+" "+d.getDate()+" "+MO[d.getMonth()]+" kl "+e[1].replace(":",".")}
+/* Evenemang inom 14 dagar blir förslag också */
+function evAsActivity(e){const tid=e[6]>=2?2:1;const a=[e[2],e[3],e[6],tid,e[7],e[5]];a.ev=e;return a}
+const $=id=>document.getElementById(id);
+const state={ork:0,tid:0,zon:0};
+let current=null, recent=[];
+
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let done=load("vsjgi-done",[]), favs=load("vsjgi-favs",[]);
+
+const months=["januari","februari","mars","april","maj","juni","juli","augusti","september","oktober","november","december"];
+const days=["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"];
+const now=new Date();
+$("today").textContent=days[now.getDay()]+" "+now.getDate()+" "+months[now.getMonth()];
+
+document.querySelectorAll(".seg").forEach(seg=>{
+  const key=seg.dataset.key;
+  seg.querySelectorAll("button").forEach(b=>{
+    b.setAttribute("aria-pressed",b.dataset.v==="0");
+    b.addEventListener("click",()=>{
+      state[key]=+b.dataset.v;
+      seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    });
+  });
+});
+
+function pick(){
+  const m=now.getMonth()+1;
+  const soon=upcoming().filter(e=>evDate(e)-now<14*864e5).map(evAsActivity);
+  const base=A.filter(a=>!a[6]||a[6].includes(m)).concat(soon,soon);
+  const tests=[
+    a=>(!state.ork||a[2]<=state.ork)&&(!state.tid||a[3]===state.tid)&&(!state.zon||a[4]===state.zon),
+    a=>(!state.ork||a[2]<=state.ork)&&(!state.tid||a[3]<=state.tid)&&(!state.zon||a[4]===state.zon),
+    a=>(!state.ork||a[2]<=state.ork)&&(!state.tid||a[3]<=state.tid),
+    a=>(!state.ork||a[2]<=state.ork),
+  ];
+  for(const t of tests){
+    let pool=base.filter(t).filter(a=>!recent.includes(a[0]));
+    if(!pool.length) pool=base.filter(t);
+    if(pool.length){return pool[Math.floor(Math.random()*pool.length)]}
+  }
+  return base[Math.floor(Math.random()*base.length)];
+}
+
+function show(a,isExample){
+  current=a;
+  recent.push(a[0]); if(recent.length>12) recent.shift();
+  const card=$("card"); card.style.animation="none"; card.offsetHeight; card.style.animation="";
+  card.querySelector(".eyebrow").textContent=isExample?"Exempel på förslag":a.ev?"Händer "+evLabel(a.ev):"Ditt förslag";
+  $("what").textContent=a[0];
+  $("why").textContent=a[1];
+  $("more").hidden=!a.ev; if(a.ev) $("more").href=a.ev[8];
+  $("tags").innerHTML="";
+  [[a.ev?a.ev[4]:VAR[a[5]],""],[ORK[a[2]],""],[TID[a[3]],""],[ZON[a[4]],a[4]===3?"zon3":""]].forEach(([t,c])=>{
+    const s=document.createElement("span"); s.className="tag "+c; s.textContent=t; $("tags").appendChild(s);
+  });
+  const isFav=favs.includes(a[0]);
+  $("fav").setAttribute("aria-pressed",isFav); $("fav").textContent=isFav?"♥":"♡";
+  $("toast").textContent="";
+}
+
+const cheers=["Bra! Det räcker gott för idag.","Snyggt. Ett litet steg är också ett steg.","Härligt. Skicka en bild till Jenny!","Du gjorde det. Var lite stolt.","Fint. Det här räknas."];
+$("go").addEventListener("click",()=>show(pick()));
+$("no").addEventListener("click",()=>{show(pick());$("toast").textContent="Helt okej. Här är något annat."});
+$("yes").addEventListener("click",()=>{
+  if(!current) return;
+  const d=new Date();
+  done.unshift({t:current[0],d:d.getDate()+" "+months[d.getMonth()].slice(0,3)});
+  save("vsjgi-done",done); render();
+  $("toast").textContent=cheers[Math.floor(Math.random()*cheers.length)];
+});
+$("fav").addEventListener("click",()=>{
+  if(!current) return;
+  const i=favs.indexOf(current[0]);
+  if(i>-1) favs.splice(i,1); else favs.unshift(current[0]);
+  save("vsjgi-favs",favs); show(current); recent.pop(); render();
+});
+
+function render(){
+  $("count").textContent=done.length;
+  $("done").innerHTML=""; $("doneEmpty").hidden=done.length>0;
+  done.slice(0,30).forEach(x=>{
+    const li=document.createElement("li");
+    li.innerHTML='<span></span><span class="date"></span>';
+    li.children[0].textContent=x.t; li.children[1].textContent=x.d;
+    $("done").appendChild(li);
+  });
+  $("favs").innerHTML=""; $("favEmpty").hidden=favs.length>0;
+  favs.forEach(t=>{
+    const ev=E.find(x=>x[2]===t);
+    const a=A.find(x=>x[0]===t)||(ev&&evAsActivity(ev)); if(!a) return;
+    const li=document.createElement("li");
+    li.innerHTML='<span></span><button type="button">Visa</button>';
+    li.children[0].textContent=t;
+    li.children[1].addEventListener("click",()=>{show(a);window.scrollTo({top:$("card").offsetTop-20,behavior:"smooth"})});
+    $("favs").appendChild(li);
+  });
+}
+
+function renderEvents(){
+  const list=upcoming().slice(0,8);
+  $("evEmpty").hidden=list.length>0; $("evlist").innerHTML="";
+  let lastM=-1;
+  list.forEach(e=>{
+    const d=evDate(e);
+    if(d.getMonth()!==lastM){lastM=d.getMonth();const h=document.createElement("li");h.className="evmonth";h.textContent=months[lastM].charAt(0).toUpperCase()+months[lastM].slice(1);$("evlist").appendChild(h)}
+    const li=document.createElement("li"); li.className="ev";
+    li.innerHTML='<div class="day"><small></small><b></b><small class="mo"></small></div><div class="info"><strong></strong><span></span><a target="_blank" rel="noopener">Läs mer</a></div>';
+    li.querySelector("small").textContent=WD[d.getDay()]; li.querySelector("b").textContent=d.getDate(); li.querySelector(".mo").textContent=MO[d.getMonth()];
+    li.querySelector("strong").textContent=e[2];
+    li.querySelector(".info span").textContent=WD[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()]+" kl "+e[1].replace(":",".")+" · "+e[4];
+    li.querySelector("a").href=e[8];
+    $("evlist").appendChild(li);
+  });
+}
+renderEvents();
+
+function setLetter(hidden){$("letter").hidden=hidden;$("showLetter").hidden=!hidden;save("vsjgi-letter",hidden)}
+$("hideLetter").addEventListener("click",()=>setLetter(true));
+$("showLetter").addEventListener("click",()=>setLetter(false));
+setLetter(load("vsjgi-letter",false));
+
+show(A[0],true);
+render();
+</script>
+<script>
+let deferred;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;document.getElementById("install").hidden=false});
+document.getElementById("install").addEventListener("click",async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;document.getElementById("install").hidden=true});
+window.addEventListener("appinstalled",()=>{document.getElementById("install").hidden=true});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
