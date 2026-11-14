@@ -294,6 +294,13 @@ const E=[
 ["2026-12-13","17:00","Luciakonsert i Domkyrkan","Domkyrkans flickkör och Collegium Cantorum. Även kl 19.30.","Uppsala domkyrka","musik","https://stadsevent.se/uppsala/evenemang/uppsala-domkyrka/52193/uppsala-domkyrkas-flickkör-och-collegium-cantorum-luciakonsert"],
 ["2026-12-18","20:00","Kvällsdans med Callinaz","Dansbandsdans kl 20–24.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
 ["2026-12-19","19:30","Blackbird Swingin' Christmas","Swing och jul på Blackbird.","Blackbird","musik","https://stadsevent.se/uppsala/evenemang/blackbird/42587/blackbird-swingin-christmas"],
+["2026-12-20","17:00","Banna Sona Band Christmas Edition","Jazzig julkonsert i UKK.","Uppsala Konsert & Kongress","musik","https://ukk.se/banna-sona-band-christmas-edition/"],
+["2027-01-05","17:00","Trettondagsafton","Klassisk nyårskonsert på trettondagsafton.","Uppsala Konsert & Kongress","musik","https://ukk.se/trettondagsafton-2027/"],
+["2027-01-21","13:00","Dagdans med Junix","Första dansbandsdansen efter nyår, kl 13–17.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2027-01-28","19:00","Copland och Beethoven","Uppsala Kammarorkester i Stora salen.","Uppsala Konsert & Kongress","musik","https://ukk.se/copland-och-beethoven-uppsala-kammarorkester/"],
+["2027-01-29","12:15","Lunchkonsert: Judy Garland","Karin Grönberg sjunger Judy Garland mitt på dagen.","Uppsala Konsert & Kongress","musik","https://ukk.se/lunchkonsert-judy-garland/"],
+["2027-01-30","19:00","Januarikalaset med Jacke Sjödin","Show med musik, humor och gäster.","Uppsala Konsert & Kongress","kultur","https://ukk.se/januarikalaset-2027-jacke-sjodin-med-gaster/"],
+["2027-01-31","19:30","Ane Brun","Ane Brun på turné med nya skivan.","Uppsala Konsert & Kongress","musik","https://ukk.se/ane-brun-i-thought-we-were-the-same-tour/"],
 ];
 
 /* Konsertkalender: [datum, tid, titel, scen, genre, länk, status] · scen: ukk|katalin|teater|domkyrkan|blackbird|ovrigt · status: ""|"slut" */
@@ -495,9 +502,9 @@ function render(){
 
 function renderEvents(){
   const all=upcoming().filter(e=>!evCat||e[5]===evCat);
-  const list=evShowAll?all:all.slice(0,8);
+  const lim=new Date();lim.setDate(lim.getDate()+62);const inRange=all.filter(e=>evDate(e)<=lim);const list=evShowAll?all:inRange.slice(0,10);
   $("evEmpty").hidden=all.length>0; $("evlist").innerHTML="";
-  $("moreEv").hidden=all.length<=8||evShowAll;
+  $("moreEv").hidden=all.length<=list.length||evShowAll;
   let lastM=-1;
   list.forEach(e=>{
     const d=evDate(e);
