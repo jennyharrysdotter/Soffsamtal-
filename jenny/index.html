@@ -83,6 +83,13 @@ li button{background:none;border:0;color:var(--plum);font:600 13px var(--body);c
 .lists{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:20px}
 .countrow{display:flex;align-items:baseline;gap:10px}
 .count{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--beat);font-variant-numeric:tabular-nums}
+.kstatus{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--beat);margin-left:6px}
+.ev .heart{background:none;border:0;color:var(--beat);font-size:18px;cursor:pointer;padding:0 2px;align-self:start}
+.ev.k{grid-template-columns:54px 1fr auto}
+.venues summary{cursor:pointer;font-weight:600;color:var(--plum);padding:6px 0}
+.venues li{flex-direction:column;gap:2px}
+.venues li a{color:var(--beat);font-weight:600;font-size:14px;text-underline-offset:3px}
+.venues li span{color:var(--muted);font-size:13.5px}
 .foot{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 0}
 @media (prefers-reduced-motion:no-preference){.card{animation:rise .3s ease-out}@keyframes rise{from{transform:translateY(8px)}to{transform:none}}}
 </style>
@@ -133,6 +140,16 @@ li button{background:none;border:0;color:var(--plum);font:600 13px var(--body);c
     <ul id="evlist"></ul>
     <p class="empty" id="evEmpty" hidden>Inget inlagt i den här kategorin just nu.</p>
     <button class="more-ev" id="moreEv" type="button" hidden>Visa fler</button>
+  </section>
+
+  <section class="events" id="konserter">
+    <div class="evhead"><h2>Konsertkalender</h2><span class="eyebrow" id="kUpdated">Uppdaterad 14 nov</span></div>
+    <p class="empty" style="color:var(--muted);font-size:14.5px">Alla scener på ett ställe, flera månader framåt. Köp biljett i tid till det du inte vill missa.</p>
+    <div class="chips" id="kfilter" role="group" aria-label="Filtrera scen"></div>
+    <ul id="klist"></ul>
+    <p class="empty" id="kEmpty" hidden>Inget inlagt för den här scenen just nu.</p>
+    <button class="more-ev" id="moreK" type="button" hidden>Visa fler</button>
+    <details class="venues"><summary>Alla scener och deras program</summary><ul id="venues"></ul></details>
   </section>
 
   <section class="lists">
@@ -279,6 +296,93 @@ const E=[
 ["2026-12-19","19:30","Blackbird Swingin' Christmas","Swing och jul på Blackbird.","Blackbird","musik","https://stadsevent.se/uppsala/evenemang/blackbird/42587/blackbird-swingin-christmas"],
 ];
 
+/* Konsertkalender: [datum, tid, titel, scen, genre, länk, status] · scen: ukk|katalin|teater|domkyrkan|blackbird|ovrigt · status: ""|"slut" */
+const K=[
+["2026-11-17","20:00","Moonica Mac","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/35324/moonica-mac",""],
+["2026-11-19","19:00","GROOVE","ukk","Dans & cirkus","https://ukk.se/groove/",""],
+["2026-11-19","19:30","Ana Moura","ukk","Fado & folk","https://ukk.se/ana-moura/",""],
+["2026-11-20","12:15","Lunchkonsert: Enkel, vacker, öm","ukk","Jazz","https://ukk.se/lunchkonsert-enkel-vacker-om-2026/","slut"],
+["2026-11-20","19:30","Hansson de Wolfe United","ukk","Pop & rock","https://ukk.se/hansson-de-wolfe-united/",""],
+["2026-11-20","20:00","En kväll på Operan","katalin","Opera","https://stadsevent.se/uppsala/evenemang/katalin-uppsala/29374/en-kväll-på-operan",""],
+["2026-11-20","20:00","Hardline","katalin","Rock","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/17321/hardline",""],
+["2026-11-21","16:00","Carte Blanche: Trio X med hemliga gäster","ukk","Jazz, fri entré","https://ukk.se/carte-blanche-trio-x-med-hemliga-gaster-nov-2026/",""],
+["2026-11-21","19:30","Per Andersson: Kardborreshowen","ukk","Humor","https://ukk.se/per-andersson-kardborreshowen-2026/",""],
+["2026-11-21","19:30","Aron","blackbird","Pop","https://stadsevent.se/uppsala/evenemang/blackbird/33141/aron",""],
+["2026-11-21","20:00","Uppsala Blues Festival","katalin","Blues","https://stadsevent.se/uppsala/evenemang/katalin-uppsala/38741/uppsala-blues-festival",""],
+["2026-11-22","16:00","Niklas Strömstedt: Tyck om mig","ukk","Pop & rock","https://ukk.se/niklas-stromstedt-tyck-om-mig-nov/",""],
+["2026-11-22","16:00","Poste Restante","ukk","Klassiskt","https://ukk.se/poste-restante-22-11/","slut"],
+["2026-11-22","","Candlelight: Tribute to Queen and The Beatles","teater","Konsert i levande ljus","https://feverup.com/m/655617/en",""],
+["2026-11-22","","Candlelight: The Best of Hans Zimmer","teater","Konsert i levande ljus","https://feverup.com/m/655963/en",""],
+["2026-11-26","19:00","City Lights: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/city-lights-uppsala-kammarorkester/",""],
+["2026-11-26","20:00","Mia Karlsson: Coming Home Tour","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin/32583/mia-karlsson-coming-home-tour-2026",""],
+["2026-11-26","20:00","Den Svenska Björnstammen","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/22600/den-svenska-björnstammen",""],
+["2026-11-27","20:00","Den Svenska Björnstammen","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/25314/den-svenska-björnstammen",""],
+["2026-11-27","21:00","Evigt Edvin: Edvin Törnblom","ukk","Humor","https://ukk.se/evigt-edvin-edvin-tornblom-3/",""],
+["2026-11-28","20:00","Pepperbyrds på Katalins bakficka","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin-uppsala/50150/pepperbyrds-på-katalins-bakficka",""],
+["2026-11-29","15:00","Nötknäpparen","ukk","Balett","https://ukk.se/notknapparen/",""],
+["2026-11-30","19:00","Christmas in Ireland","ukk","Jul & folk","https://ukk.se/christmas-in-ireland/",""],
+["2026-12-02","19:00","Drottningens virtuoser","ovrigt","Klassiskt, Uppsala slott","https://stadsevent.se/uppsala/evenemang/uppsala-slottshistoriska/32141/konsert-drottningens-virtuoser",""],
+["2026-12-02","20:00","Amanda Ginsburg: Det är jul nu igen","katalin","Jazz & jul","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/21124/amanda-ginsburg-det-är-jul-nu-igen",""],
+["2026-12-03","20:00","Fröken Elvis jul","katalin","Rock & jul","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/11609/fröken-elvis-jul",""],
+["2026-12-04","19:00","Christmas Night","ukk","Jul","https://ukk.se/christmas-night/",""],
+["2026-12-04","20:00","The Fantastic Four: A Motown Christmas","katalin","Soul & jul","https://stadsevent.se/uppsala/evenemang/katalin/18518/the-fantastic-four-a-motown-christmas-uppsala",""],
+["2026-12-04","20:00","Julen enligt Timo","katalin","Jul","https://stadsevent.se/uppsala/evenemang/katalin/32907/julen-enligt-timo-uppsala",""],
+["2026-12-05","17:30","Anna Heikkinen & Längtans Kapell: Satumaa","ukk","Folk","https://ukk.se/anna-heikkinen-langtans-kapell/",""],
+["2026-12-05","20:00","Pernilla Andersson: Vintersånger från Garbo","katalin","Visor & jul","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/41157/pernilla-andersson-vintersånger-från-garbo",""],
+["2026-12-09","19:30","Weeping Willows: Christmas","ukk","Pop & jul","https://ukk.se/weeping-willows-christmas/",""],
+["2026-12-09","19:30","Julkonsert med Romeo & Julia Kören","ukk","Kör & jul","https://ukk.se/julkonsert-med-romeo-julia-koren-2/",""],
+["2026-12-10","19:00","Thomas Järvheden: Sveriges roligaste julkonsert","ukk","Humor & jul","https://ukk.se/thomas-jarvheden-sveriges-roligaste-julkonsert/",""],
+["2026-12-11","19:00","Jul med Franska Trion","ukk","Jazz & jul","https://ukk.se/jul-med-franska-trion-2026/",""],
+["2026-12-11","20:00","En kväll på Operan","katalin","Opera","https://stadsevent.se/uppsala/evenemang/katalin-uppsala/30491/en-kväll-på-operan",""],
+["2026-12-12","20:00","The Last Waltz!","katalin","Rock","https://stadsevent.se/uppsala/evenemang/katalin/27909/the-last-waltz",""],
+["2026-12-13","17:00","Luciakonsert: Domkyrkans flickkör och Collegium Cantorum","domkyrkan","Kör","https://stadsevent.se/uppsala/evenemang/uppsala-domkyrka/52193/uppsala-domkyrkas-flickkör-och-collegium-cantorum-luciakonsert",""],
+["2026-12-13","19:00","West of Eden: Celtic Christmas","ukk","Folk & jul","https://ukk.se/west-of-eden-celtic-christmas-2026/",""],
+["2026-12-13","19:30","Arvingarna: Klart det ska bli jul, igen!","ukk","Dansband & jul","https://ukk.se/arvingarna-klart-det-ska-bli-jul-igen/",""],
+["2026-12-14","19:00","Schola Cantorum: Luciakonsert","domkyrkan","Kör","https://stadsevent.se/uppsala/evenemang/uppsala-domkyrka/50607/schola-cantorum-luciakonsert",""],
+["2026-12-16","20:00","Valter Nilsson","katalin","Pop","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/41048/valter-nilsson",""],
+["2026-12-17","19:00","Julkonsert med Arméns musikkår","ukk","Klassiskt & jul","https://ukk.se/julkonsert-med-armens-musikkar/",""],
+["2026-12-18","19:00","Anders Ekborg: En stilla jul","ovrigt","Jul, Missionskyrkan","https://stadsevent.se/uppsala/evenemang/missionskyrkan-uppsala/47929/anders-ekborg-en-stilla-jul",""],
+["2026-12-19","19:00","Hans Zimmers musik: Lords of the Sound","ukk","Filmmusik","https://ukk.se/hans-zimmers-musik-spelad-av-lords-of-the-sound/",""],
+["2026-12-19","19:30","Blackbird Swingin' Christmas","blackbird","Swing & jul","https://stadsevent.se/uppsala/evenemang/blackbird/42587/blackbird-swingin-christmas",""],
+["2026-12-20","17:00","Banna Sona Band Christmas Edition","ukk","Jazz & jul","https://ukk.se/banna-sona-band-christmas-edition/",""],
+["2027-01-05","17:00","Trettondagsafton","ukk","Klassiskt","https://ukk.se/trettondagsafton-2027/",""],
+["2027-01-24","16:00","Poste Restante","ukk","Klassiskt","https://ukk.se/poste-restante-24-1/",""],
+["2027-01-28","19:00","Copland och Beethoven: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/copland-och-beethoven-uppsala-kammarorkester/",""],
+["2027-01-29","12:15","Lunchkonsert: Judy Garland","ukk","Jazz","https://ukk.se/lunchkonsert-judy-garland/",""],
+["2027-01-30","19:00","Januarikalaset: Jacke Sjödin med gäster","ukk","Show","https://ukk.se/januarikalaset-2027-jacke-sjodin-med-gaster/",""],
+["2027-01-31","19:30","Ane Brun","ukk","Pop","https://ukk.se/ane-brun-i-thought-we-were-the-same-tour/",""],
+["2027-02-04","19:30","The Dire Straits Experience","ukk","Rock","https://ukk.se/the-dire-straits-experience/",""],
+["2027-02-05","19:00","Nour El Refai: Glows in the dark","ukk","Humor","https://ukk.se/nour-el-refai-glows-in-the-dark/",""],
+["2027-02-06","19:30","The Very Best of Thin Lizzy","ukk","Rock","https://ukk.se/the-very-best-of-thin-lizzy/",""],
+["2027-02-11","19:00","Molly Hammar: Livsvittne","ukk","Pop & soul","https://ukk.se/molly-hammar/",""],
+["2027-02-12","19:30","Tommy Körberg: Unplugged","ukk","Pop","https://ukk.se/tommy-korberg-unplugged-2027/",""],
+["2027-02-13","19:30","Kim Wilde: The Singles Tour","ukk","Pop","https://ukk.se/kim-wilde-the-singles-tour-2027/",""],
+["2027-02-18","19:00","Korngolds violinkonsert: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/korngolds-violinkonsert-uppsala-kammarorkester/",""],
+["2027-02-19","19:00","Orsa spelmän, Tina Ahlin & Bengan Janson","ukk","Folk","https://ukk.se/orsa-spelman-tina-ahlin-bengan-janson/",""],
+["2027-02-20","19:30","Nannes jubileumsshow: Här är jag!","ukk","Pop","https://ukk.se/nannes-jubileumsshow/",""],
+["2027-02-24","19:00","Klas Kalas: Klas Hallberg 30 år på scen","ukk","Humor","https://ukk.se/klas-kalas-klas-hallberg-best-of-30-ar-pa-scen/",""],
+["2027-02-25","20:00","Jesper Rönndahl och Marie Agerhäll","ukk","Humor","https://ukk.se/jesper-ronndahl-och-marie-agerhall/","slut"],
+["2027-02-27","17:00","No Business Like Show Business","ukk","Musikal","https://ukk.se/no-business-like-show-business/",""],
+["2027-02-28","16:00","Poste Restante","ukk","Klassiskt","https://ukk.se/poste-restante-28-2/",""],
+["2027-02-28","19:30","Jethro Tull: The Curiosity Tour","ukk","Rock","https://ukk.se/jethro-tull-the-curiosity-tour/",""],
+["2027-03-03","19:00","Night of Famous Musicals","ukk","Musikal","https://ukk.se/night-of-famous-musicals/",""],
+["2027-03-05","19:30","Laleh: Jag såg hur vi var stjärnor","ukk","Pop","https://ukk.se/laleh-varturne-2027-jag-sag-hur-vi-var-stjarnor-2/",""],
+["2027-03-05","20:00","Merit Hemmingson: Jazzhörnan","ukk","Jazz","https://ukk.se/merit-hemmingson/",""],
+["2027-03-06","19:30","Laleh: Jag såg hur vi var stjärnor","ukk","Pop","https://ukk.se/laleh-varturne-2027-jag-sag-hur-vi-var-stjarnor/",""],
+["2027-03-12","19:30","Marika och klimakteriet","ukk","Humor","https://ukk.se/marika-och-klimakteriet-2027/",""],
+["2027-03-18","19:00","Bästa Byström: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/basta-bystrom-uppsala-kammarorkester/",""],
+["2027-03-24","20:30","The Rock Orchestra by Candlelight","ukk","Rock","https://ukk.se/the-rock-orchestra-by-candlelight/",""],
+["2027-03-28","16:00","BRUNOZ: Bruno Mitsogiannis","ukk","Pop & humor","https://ukk.se/brunoz-en-konsert-med-bruno-mitsogiannis/",""],
+["2027-04-02","19:30","Angélique Kidjo & Youssou N'Dour","ukk","Världsmusik","https://ukk.se/angelique-kidjo-youssou-ndour/",""],
+["2027-04-04","18:00","Euskefeurat: Maränger och surdeg","ukk","Visor & humor","https://ukk.se/euskefeurat-maranger-och-surdeg/",""],
+["2027-04-09","20:00","Björn Rosenström: 30 jävla år","ukk","Pop & humor","https://ukk.se/bjorn-rosenstrom-30-javla-ar/",""],
+["2027-04-10","21:30","Labyrint","ukk","Pop","https://ukk.se/labyrint/",""],
+["2027-04-18","16:00","Poste Restante","ukk","Klassiskt","https://ukk.se/poste-restante-18-4/",""],
+["2027-04-29","19:00","Valborg: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/valborg-uppsala-kammarorkester/",""],
+["2027-05-08","","The Orb","katalin","Elektroniskt","https://www.songkick.com/venues/2467809-katalin-uppsala",""],
+["2027-05-20","19:00","Tjajkovskijs pianokonsert: Uppsala Kammarorkester","ukk","Klassiskt","https://ukk.se/tjajkovskijs-pianokonsert-uppsala-kammarorkester/",""],
+];
+
 const CAT={musik:"Musik",dans:"Dans",kultur:"Kultur",aktiv:"Röra på mig",natur:"Natur",mat:"Mat & dryck",lara:"Lära mig nytt",utflykt:"Utflykt"};
 const TID=["","En timme eller två","En kväll","Halv- eller heldag"];
 const WD=["sön","mån","tis","ons","tors","fre","lör"], MO=["jan","feb","mars","april","maj","juni","juli","aug","sep","okt","nov","dec"];
@@ -367,7 +471,7 @@ $("fav").addEventListener("click",()=>{
   save("jhp-favs",favs); show(current); recent.pop(); render();
 });
 
-function findItem(t){const ev=E.find(x=>x[2]===t);return A.find(x=>x[0]===t)||(ev&&evAsActivity(ev))}
+function findItem(t){const ev=E.find(x=>x[2]===t);if(A.find(x=>x[0]===t))return A.find(x=>x[0]===t);if(ev)return evAsActivity(ev);const k=K.find(x=>x[2]===t);return k&&kAsActivity(k)}
 function render(){
   $("count").textContent=done.length;
   $("done").innerHTML=""; $("doneEmpty").hidden=done.length>0;
@@ -414,6 +518,58 @@ $("evfilter").querySelectorAll("button").forEach(b=>b.addEventListener("click",(
   renderEvents();
 }));
 $("moreEv").addEventListener("click",()=>{evShowAll=true;renderEvents()});
+
+/* Konsertkalender */
+const SC={ukk:"UKK",katalin:"Katalin",teater:"Stadsteatern",domkyrkan:"Domkyrkan",blackbird:"Blackbird",ovrigt:"Övriga scener"};
+const VENUES=[
+ ["Uppsala Konsert & Kongress","Stora salen, Sal B och lunchkonserter","https://ukk.se/program-och-biljetter/kalendarium/"],
+ ["Katalin","Rock, pop, blues och jazz vid stationen","https://www.katalin.com/"],
+ ["Uppsala stadsteater","Teater, musikal och konserter","https://www.uppsalastadsteater.se/"],
+ ["Reginateatern","Teater, dans och gästspel","https://www.reginateatern.se/"],
+ ["Uppsala domkyrka","Orgel, körer och julkonserter","https://www.svenskakyrkan.se/uppsaladomkyrka/konserter"],
+ ["Parksnäckan","Sommarscen i Stadsträdgården, programmet släpps på våren","https://destinationuppsala.se/event-kategori/konsert/"],
+ ["Fyris Park","Dansbandsdanser","https://www.danslogen.se/dansprogram/lan/uppsala"],
+ ["Universitetets konserter","Akademiska kapellet, körer och jazzorkester","https://www.uu.se/"],
+ ["Alla konserter i Uppsala","Destination Uppsalas samlade kalender","https://destinationuppsala.se/event-kategori/konsert/"],
+];
+let kScen="", kShowAll=false;
+function kDate(k){return new Date(k[0]+"T"+(k[1]||"12:00")+":00")}
+function kUpcoming(){const t0=new Date();t0.setHours(0,0,0,0);return K.filter(k=>kDate(k)>=t0).sort((a,b)=>kDate(a)-kDate(b))}
+function kAsActivity(k){const a=[k[2],k[4]+" på "+SC[k[3]]+(k[6]==="slut"?". Slutsålt just nu.":". Kolla biljetterna i tid."),/teater|musikal|humor|show|balett|cirkus/i.test(k[4])?"kultur":"musik",2];a.ev=[k[0],k[1]||"",k[2],"",SC[k[3]],"",k[5]];return a}
+function renderK(){
+  const f=$("kfilter");
+  if(!f.children.length){
+    const used=[...new Set(kUpcoming().map(k=>k[3]))];
+    [["","Alla"]].concat(Object.entries(SC).filter(([k])=>used.includes(k))).forEach(([v,l])=>{
+      const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.setAttribute("aria-pressed",v===kScen);
+      b.addEventListener("click",()=>{kScen=v;kShowAll=false;f.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderK()});
+      f.appendChild(b);
+    });
+  }
+  const all=kUpcoming().filter(k=>!kScen||k[3]===kScen);
+  const list=kShowAll?all:all.slice(0,15);
+  $("kEmpty").hidden=all.length>0; $("moreK").hidden=all.length<=15||kShowAll; $("klist").innerHTML="";
+  let lastM="";
+  list.forEach(k=>{
+    const d=kDate(k), mk=d.getFullYear()+"-"+d.getMonth();
+    if(mk!==lastM){lastM=mk;const h=document.createElement("li");h.className="evmonth";h.textContent=months[d.getMonth()].charAt(0).toUpperCase()+months[d.getMonth()].slice(1)+(d.getFullYear()!==now.getFullYear()?" "+d.getFullYear():"");$("klist").appendChild(h)}
+    const li=document.createElement("li");li.className="ev k";
+    li.innerHTML='<div class="day"><small></small><b></b><small></small></div><div class="info"><strong></strong><span></span><a target="_blank" rel="noopener">Biljetter och info</a></div><button class="heart" type="button"></button>';
+    const sm=li.querySelectorAll(".day small");sm[0].textContent=WD[d.getDay()];sm[1].textContent=MO[d.getMonth()];
+    li.querySelector("b").textContent=d.getDate();
+    const st=li.querySelector("strong");st.textContent=k[2];
+    if(k[6]==="slut"){const t=document.createElement("span");t.className="kstatus";t.textContent="Slutsålt";st.appendChild(t)}
+    li.querySelector(".info > span").textContent=(k[1]?"kl "+k[1].replace(":",".")+" · ":"")+SC[k[3]]+" · "+k[4];
+    li.querySelector("a").href=k[5];
+    const h=li.querySelector(".heart"), saved=()=>favs.includes(k[2]);
+    const paint=()=>{h.textContent=saved()?"♥":"♡";h.setAttribute("aria-label",saved()?"Ta bort från sparat":"Spara");h.setAttribute("aria-pressed",saved())};paint();
+    h.addEventListener("click",()=>{const i=favs.indexOf(k[2]);if(i>-1)favs.splice(i,1);else favs.unshift(k[2]);save("jhp-favs",favs);paint();render()});
+    $("klist").appendChild(li);
+  });
+}
+$("moreK").addEventListener("click",()=>{kShowAll=true;renderK()});
+VENUES.forEach(([n,d,u])=>{const li=document.createElement("li");li.innerHTML='<a target="_blank" rel="noopener"></a><span></span>';li.children[0].textContent=n;li.children[0].href=u;li.children[1].textContent=d;$("venues").appendChild(li)});
+renderK();
 
 renderEvents();
 render();
