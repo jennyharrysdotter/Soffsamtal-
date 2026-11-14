@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Jennys hitte-på app</title>
+<meta name="theme-color" content="#4B2E6F">
+<meta name="description" content="Nya saker att göra i och runt Uppsala.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+html,body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* Layout: a dance-hall poster in a pocket. One column, chunky display type, a big red "Hitta på"-knapp as the beat. */
+:root{
+  --bg:#F3F0F7; --surface:#FFFFFF; --ink:#1D1B33; --muted:#5D5A78; --line:#DEDAE8;
+  --beat:#D9452F; --beat-ink:#FFFFFF; --brass:#F0B23A; --plum:#4B2E6F; --plum-soft:#ECE5F5;
+  --display:"Bricolage Grotesque", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141322; --surface:#1E1C31; --ink:#EEECF7; --muted:#A6A2C2; --line:#302D49;
+  --beat:#F0634C; --beat-ink:#1A0B07; --brass:#F5C25E; --plum:#C7A8EE; --plum-soft:#2A2343; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141322; --surface:#1E1C31; --ink:#EEECF7; --muted:#A6A2C2; --line:#302D49;
+  --beat:#F0634C; --beat-ink:#1A0B07; --brass:#F5C25E; --plum:#C7A8EE; --plum-soft:#2A2343; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:560px;margin:0 auto;padding-block:26px 56px;display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:.98;margin:6px 0 0;letter-spacing:-.02em;text-wrap:balance}
+h1 span{color:var(--beat)}
+.sub{margin:8px 0 0;color:var(--muted)}
+h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.group{display:flex;flex-direction:column;gap:8px}
+.group > span{font-size:14px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 13px;font:500 14px var(--body);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:var(--surface);font-weight:600}
+.go{border:0;background:var(--beat);color:var(--beat-ink);font:800 20px var(--display);letter-spacing:.01em;padding:18px;border-radius:16px;cursor:pointer;
+  box-shadow:0 8px 20px -10px color-mix(in srgb,var(--beat) 80%,transparent)}
+.install{border:1.5px solid var(--plum);background:var(--surface);color:var(--plum);font:600 15px var(--body);padding:12px;border-radius:12px;cursor:pointer}
+.go:active{transform:translateY(1px)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:repeating-linear-gradient(90deg,var(--beat) 0 18px,var(--brass) 18px 36px,var(--plum) 36px 54px)}
+.card .what{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.1;margin:0;text-wrap:balance}
+.card .why{margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;font-weight:600;padding:4px 9px;border-radius:99px;background:var(--plum-soft);color:var(--plum)}
+.tag.new{background:var(--brass);color:#2A1C02}
+.card a.more{color:var(--beat);font-weight:700;font-size:14.5px;text-underline-offset:3px}
+.actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:4px}
+.actions button{border-radius:12px;padding:12px 8px;font:600 14.5px var(--body);cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.actions .yes{background:var(--plum);border-color:var(--plum);color:var(--surface)}
+.actions .fav{width:48px;font-size:18px;color:var(--beat)}
+.actions .fav[aria-pressed="true"]{background:var(--beat);border-color:var(--beat);color:var(--beat-ink)}
+.toast{font-size:14px;color:var(--plum);font-weight:600;min-height:1.2em;margin:0}
+.empty{color:var(--muted);font-size:15px;margin:0}
+.events{display:flex;flex-direction:column;gap:10px}
+.evhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+li span:first-child{min-width:0}
+li .date{color:var(--muted);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+li button{background:none;border:0;color:var(--plum);font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.evmonth{font-family:var(--display);font-weight:700;font-size:18px;color:var(--beat);padding:16px 0 4px;border-bottom:1px solid var(--line);display:block}
+.evmonth:first-child{padding-top:2px}
+.ev{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:start;padding:12px 0}
+.ev .day{background:var(--plum-soft);color:var(--plum);border-radius:12px;text-align:center;padding:6px 0;line-height:1.1}
+.ev .day b{display:block;font-family:var(--display);font-weight:800;font-size:22px;font-variant-numeric:tabular-nums}
+.ev .day small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ev .info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.ev .info strong{font-weight:600;font-size:15.5px}
+.ev .info span{color:var(--muted);font-size:13.5px}
+.ev .info a{color:var(--beat);font-size:13.5px;font-weight:600;text-underline-offset:3px}
+.more-ev{align-self:flex-start;background:none;border:0;color:var(--plum);font:600 14px var(--body);cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.lists{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:20px}
+.countrow{display:flex;align-items:baseline;gap:10px}
+.count{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--beat);font-variant-numeric:tabular-nums}
+.foot{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 0}
+@media (prefers-reduced-motion:no-preference){.card{animation:rise .3s ease-out}@keyframes rise{from{transform:translateY(8px)}to{transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow" id="today">Idag</p>
+    <h1>Jennys <span>hitte-på</span> app</h1>
+    <p class="sub">Nya saker att göra i och runt Uppsala.</p>
+  </header>
+
+  <div class="group">
+    <span id="l-cat">Vad är du sugen på?</span>
+    <div class="chips" data-key="cat" role="group" aria-labelledby="l-cat">
+      <button type="button" data-v="">Allt</button><button type="button" data-v="musik">Musik</button><button type="button" data-v="dans">Dans</button><button type="button" data-v="kultur">Kultur</button><button type="button" data-v="aktiv">Röra på mig</button><button type="button" data-v="natur">Natur</button><button type="button" data-v="mat">Mat & dryck</button><button type="button" data-v="lara">Lära mig nytt</button><button type="button" data-v="utflykt">Utflykt</button>
+    </div>
+  </div>
+  <div class="group">
+    <span id="l-tid">Hur mycket tid har du?</span>
+    <div class="chips" data-key="tid" role="group" aria-labelledby="l-tid">
+      <button type="button" data-v="0">Spelar ingen roll</button><button type="button" data-v="1">En timme eller två</button><button type="button" data-v="2">En kväll</button><button type="button" data-v="3">Halv- eller heldag</button>
+    </div>
+  </div>
+
+  <button class="go" id="go" type="button">Hitta på något!</button>
+  <button class="install" id="install" type="button" hidden>Lägg appen på hemskärmen</button>
+
+  <section class="card" id="card" aria-live="polite">
+    <p class="eyebrow" id="cardEyebrow">Exempel på förslag</p>
+    <h2 class="what" id="what"></h2>
+    <p class="why" id="why"></p>
+    <div class="tags" id="tags"></div>
+    <a class="more" id="more" href="#" target="_blank" rel="noopener" hidden>Läs mer och boka</a>
+    <div class="actions">
+      <button class="yes" id="yes" type="button">Det gör jag!</button>
+      <button id="no" type="button">Nåt annat</button>
+      <button class="fav" id="fav" type="button" aria-pressed="false" aria-label="Spara som favorit">♡</button>
+    </div>
+    <p class="toast" id="toast"></p>
+  </section>
+
+  <section class="events">
+    <div class="evhead"><h2>Händer i Uppsala</h2><span class="eyebrow" id="updated">Uppdaterad 14 nov</span></div>
+    <div class="chips" id="evfilter" role="group" aria-label="Filtrera evenemang">
+      <button type="button" data-v="" aria-pressed="true">Allt</button><button type="button" data-v="musik" aria-pressed="false">Musik</button><button type="button" data-v="dans" aria-pressed="false">Dans</button><button type="button" data-v="kultur" aria-pressed="false">Kultur</button>
+    </div>
+    <ul id="evlist"></ul>
+    <p class="empty" id="evEmpty" hidden>Inget inlagt i den här kategorin just nu.</p>
+    <button class="more-ev" id="moreEv" type="button" hidden>Visa fler</button>
+  </section>
+
+  <section class="lists">
+    <div class="countrow"><span class="count" id="count">0</span><h2>saker jag har gjort</h2></div>
+    <ul id="done"></ul>
+    <p class="empty" id="doneEmpty">Tryck på "Det gör jag!" så samlas allt här.</p>
+    <h2 style="margin-top:8px">Sparat till senare</h2>
+    <ul id="favs"></ul>
+    <p class="empty" id="favEmpty">Tryck på hjärtat för att spara ett förslag eller evenemang.</p>
+  </section>
+
+  <p class="foot">Förslagen blandar gamla favoriter med sånt du inte testat. Det du redan gjort dyker upp mer sällan.</p>
+</div>
+
+<script>
+/* Aktiviteter: [titel, beskrivning, kategori, tid 1=timme 2=kväll 3=halv/heldag, månader?]
+   kategori: musik | dans | kultur | aktiv | natur | mat | lara | utflykt */
+const A=[
+// Musik
+["Gå på jazz på Katalin","Klubbkväll i gamla godsmagasinet vid stationen. Kolla programmet och ta en drink vid scenen.","musik",2],
+["Lyssna på en lunchkonsert på UKK","Uppsala Konsert & Kongress har lunchkonserter i Sal B. Musik mitt på dagen gör hela eftermiddagen bättre.","musik",1],
+["Gå på konsert i Domkyrkan","Orgel, körer och julkonserter i Sveriges högsta kyrkorum. Ofta gratis eller billigt.","musik",1],
+["Se en spelning på Blackbird","Liten scen, nära artisterna. Välj något du inte hört förut.","musik",2],
+["Gå på en studentkör- eller orkesterkonsert","Universitetets körer och orkestrar ger konserter hela terminen, ofta till låga priser.","musik",2],
+["Gå på öppen scen","Leta upp en open mic i stan och lyssna på folk som vågar. Kanske vågar du nästa gång?","musik",2],
+["Köp biljett till en artist du aldrig sett live","Bläddra i UKK:s eller Katalins program och välj någon helt på måfå.","musik",2],
+["Sjung i en kör en termin","Uppsala har massor av körer, från gospel till pop. Många tar in nya sångare i januari och augusti.","musik",2],
+["Gå på konsert i en nationssal","Nationerna har klubbar och konserter. Kolla vilka som är öppna för alla.","musik",2],
+["Lyssna på vinyl i en skivaffär","Gå in, be om ett tips och lyssna i hörlurarna. Köp en skiva om något fastnar.","musik",1],
+["Gör en egen bugglista","Tjugo låtar som får dig att vilja dansa. Spela den i köket.","musik",1],
+
+// Dans
+["Gå på dans på Fyris Park","Dansbandsdans med liveband flera gånger i veckan, både dagdans och kvällsdans.","dans",2],
+["Gå på torsdagsdans med UBSS","Uppsala Bugg & Swing Society har socialdans på torsdagar i Granebergsparken. Bara dans, inget krav på partner.","dans",2],
+["Gå en fortsättningskurs i bugg","Lär dig nya turer och få flyt. UBSS och studieförbund har kurser varje termin.","dans",2],
+["Prova lindy hop","Swingens vilda kusin. En prova-på-kväll räcker för att se om det fastnar.","dans",2],
+["Prova west coast swing","Långsammare och mer flytande än bugg, och funkar till modern musik.","dans",2],
+["Gå en kurs i salsa","Ett helt annat sätt att röra höfterna. Det finns kurser och socialdanser i Uppsala.","dans",2],
+["Prova linedance","Ingen partner behövs, bara boots om du vill. Roligt och lätt att komma in i.","dans",2],
+["Gå på en dansresa en helg","Dansbanor och buggläger runt om i landet. Packa dansskorna och åk iväg.","dans",3],
+["Åk på dans i en folkpark utanför stan","Kolla danslogen.se och hitta en dans i en bygdegård eller folkpark i länet.","dans",3],
+["Prova bugg till ett nytt band","Välj en kväll med ett band du inte dansat till förut.","dans",2],
+["Prova en klass i zumba eller dansfitness","Svettigt, glatt och inga steg du måste kunna i förväg.","dans",1],
+
+// Kultur
+["Se en föreställning på Uppsala stadsteater","Välj en pjäs du inte vet något om och låt dig överraskas.","kultur",2],
+["Gå på Uppsala konstmuseum","I slottet. Gå på en visning eller en kväll med konst och bar.","kultur",1],
+["Besök Bror Hjorths hus","Konstnärens hem och ateljé, fullt av färg och folkkonst.","kultur",1],
+["Gå på Gustavianum","Universitetets museum med den anatomiska teatern under kupolen.","kultur",1],
+["Gå på Upplandsmuseet","Landskapets historia vid Fyrisån, ofta med bra tillfälliga utställningar.","kultur",1],
+["Gå på History and Bar på slottet","Kvällar med historia och en drink i Uppsala slott.","kultur",2],
+["Se en film på Slottsbiografen","En av Uppsalas gamla biografer. Välj en film du annars aldrig skulle välja.","kultur",2],
+["Gå på en föreläsning på universitetet","Universitetet har öppna föreläsningar för alla. Välj ett ämne du inte kan något om.","kultur",2],
+["Gå på stand-up","Kolla vad som går på UKK eller små scener. Skratt är bra träning också.","kultur",2],
+["Gå på Gamla Uppsala museum","Högarna, vikingarna och kungsgården. Gå runt ute efteråt.","kultur",3],
+["Gå på en guidad stadsvandring","Lär dig något nytt om stan du bor i.","kultur",1],
+["Gå på en vernissage","Gallerier har ofta öppna vernissager med vin och folk. Gratis och trevligt.","kultur",1],
+
+// Röra på mig
+["Bada på Fyrishov","Simma, åk vattenrutschkana eller sitt i bastun.","aktiv",2],
+["Prova padel","Boka en bana med någon, eller gå med i ett mixat spel för nybörjare.","aktiv",1],
+["Prova bouldering","Klättring utan rep i en klätterhall. Nybörjarvänligt och roligt.","aktiv",1],
+["Åk skridskor","Fyrishov och utomhusbanor i stan, eller långfärdsskridsko med guide när isen lagt sig.","aktiv",2,[12,1,2]],
+["Spela discgolf","Det finns banor i och runt Uppsala. Låna eller köp några discar.","aktiv",2,[4,5,6,7,8,9,10]],
+["Hyr en kanot på Fyrisån","Paddla genom stan och se den från vattnet.","aktiv",3,[5,6,7,8,9]],
+["Cykla till Gamla Uppsala","En fin runda längs vägar och åkrar. Fika vid högarna.","aktiv",2,[4,5,6,7,8,9,10]],
+["Prova ett nytt gruppass","Spinning, yoga, cirkelträning eller något du aldrig gjort.","aktiv",1],
+["Gå på en löparträff","Löpargrupper i Uppsala springer tillsammans i olika tempon.","aktiv",1],
+["Prova bågskytte","Många klubbar har prova-på. Fokus, lugn och lite tävlingsinstinkt.","aktiv",2],
+["Prova golf på en drivingrange","Hyr klubbor och slå en hink bollar.","aktiv",1,[4,5,6,7,8,9,10]],
+
+// Natur
+["Gå i Hågadalen–Nåsten","Naturreservat precis i stan med skog, hagar och kullar.","natur",2],
+["Gå i Lunsen","Stort skogsområde söder om Uppsala med stigar och myrar.","natur",3],
+["Åk till Fjällnora","Sjö, skog och friluftsområde. Bada på sommaren, åk skidor eller gå på vintern.","natur",3],
+["Gå en etapp på Upplandsleden","Vandringsled genom hela landskapet. Välj en etapp och ta med matsäck.","natur",3],
+["Gå i Botaniska trädgården","Tropiska växthuset är grönt och varmt även i november.","natur",1],
+["Gå i Linnéträdgården","Linnés egen trädgård mitt i stan, bäst under växtsäsongen.","natur",1,[5,6,7,8,9]],
+["Gå längs Ekoln vid Sunnersta","Promenera längs Mälarviken och se solnedgången.","natur",2],
+["Plocka svamp eller bär","Ta med en korg och åk ut i skogen runt Uppsala.","natur",3,[7,8,9,10]],
+["Gå en fågelpromenad","Ta med kikare till en våtmark och se vad som flyger förbi.","natur",2],
+["Grilla korv ute en vinterdag","Ta med termos och korv och leta upp en grillplats. Gör en eld.","natur",2,[11,12,1,2,3]],
+
+// Mat & dryck
+["Ät lunch i Saluhallen","Saluhallen vid ån har flera ställen. Välj något du aldrig ätit.","mat",1],
+["Gå på vinprovning","Lär dig smaka och prata om vin med andra.","mat",2],
+["Gå en matlagningskurs","Thai, pasta, surdeg eller indiskt. Lär dig något nytt i köket med andra.","mat",2],
+["Testa en ny restaurang varje månad","Välj en mat du aldrig provat och boka bord.","mat",2],
+["Gå på afternoon tea","Lyxa till en vanlig eftermiddag med scones och te.","mat",1],
+["Ta en ölprovning på ett bryggeri","Uppsala har mikrobryggerier. Prova något nytt.","mat",2],
+["Fika på ett kafé du aldrig varit på","Uppsala är fullt av kaféer. Välj ett nytt varje gång.","mat",1],
+["Bjud hem folk på middag","Laga något nytt och bjud några du vill lära känna bättre.","mat",2],
+
+// Lära sig nytt
+["Gå en keramikkurs","Dreja eller handbygg. Händerna i leran är meditation.","lara",2],
+["Prova målning eller kroki","Kvällskurser i studieförbund. Ingen förkunskap behövs.","lara",2],
+["Lär dig ett nytt språk","Italienska, spanska eller något oväntat. Kvällskurs eller app.","lara",2],
+["Gå en fotokurs","Lär dig ta bättre bilder med mobilen eller kameran.","lara",2],
+["Prova smideskurs eller träslöjd","Gör något med händerna som håller i många år.","lara",3],
+["Lär dig spela ukulele","Lätt att komma igång med, och du kan spela på fester inom ett par veckor.","lara",1],
+["Gå en kurs i vinterbad","Lär dig vinterbada säkert med andra. Bastu efteråt.","lara",2,[11,12,1,2,3]],
+["Prova improvisationsteater","Lekfullt och roligt. Bra för modet och skrattmusklerna.","lara",2],
+
+// Utflykter
+["Åk till Sigtuna","Sveriges äldsta stad. Ruiner, kaféer och promenad längs Mälaren.","utflykt",3],
+["Besök Skoklosters slott","Barockslott vid Mälaren med fantastiska samlingar.","utflykt",3,[5,6,7,8,9]],
+["Åk till Wiks slott","Medeltida borg vid Ekoln. Gå runt i parken.","utflykt",3],
+["Åk till Ulva kvarn","Hantverksby vid Fyrisån norr om stan. Fika och titta på hantverk.","utflykt",2],
+["Åk till Österbybruk och Lövstabruk","Gamla bruksorter i norra Uppland med vackra herrgårdsmiljöer.","utflykt",3],
+["Åk tåg till Stockholm på museum","Tåget går snabbt. Välj ett museum du aldrig varit på.","utflykt",3],
+["Gå på teater eller konsert i Stockholm","Ta kvällståget hem. Dramaten, Konserthuset eller en jazzklubb.","utflykt",3],
+["Åk till Gävle eller Västerås en dag","Ny stad, nya kaféer, samma tåg.","utflykt",3],
+["Åk på dansweekend","Leta upp ett buggläger eller en dansresa och anmäl dig.","utflykt",3],
+["Åk till Åland en helg","Båt från Kapellskär. Cykla, ät gott och andas havsluft.","utflykt",3,[5,6,7,8,9]],
+];
+
+/* Evenemang: [datum, tid, titel, beskrivning, plats, kategori musik|dans|kultur, länk] */
+const E=[
+["2026-11-17","20:00","Moonica Mac","Spelning i den mindre jazzklubbsdelen på Katalin.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/35324/moonica-mac"],
+["2026-11-18","19:00","Kvinnor och äppelträd","Dans och teater på Gottsunda Dans & Teater.","Gottsunda Dans & Teater","kultur","https://stadsevent.se/uppsala/evenemang/gottsunda-dans-och-teater/52692/kvinnor-och-äppelträd"],
+["2026-11-19","13:00","Dagdans med Micke Ahlgrens","Dansbandsdans på eftermiddagen, kl 13–17.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-11-19","19:30","Pyjamasparty på torsdagsdansen","UBSS socialdans i pyjamas, kl 19.30–21.30.","Granebergsparken","dans","https://ubss.se/pyjamasparty-pa-torsdagsdansen/"],
+["2026-11-20","12:15","Lunchkonsert: Enkel, vacker, öm","Lunchkonsert i Sal B.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-sal-b/31978/lunchkonsert-enkel-vacker-öm"],
+["2026-11-20","19:30","Hansson de Wolfe United","Kultbandet live i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/9271/hansson-de-wolfe-united"],
+["2026-11-20","20:00","Kvällsdans med Allstars","Dansbandsdans kl 20–24.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-11-21","20:00","Uppsala Blues Festival","Bluesfestival på Katalin.","Katalin","musik","https://stadsevent.se/uppsala/evenemang/katalin-uppsala/38741/uppsala-blues-festival"],
+["2026-11-22","16:00","Niklas Strömstedt: Tyck om mig","Eftermiddagskonsert i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/10287/niklas-strömstedt-tyck-om-mig"],
+["2026-11-26","18:00","History and Bar: Nordens modernaste fästning?","Historia och bar på slottet.","Uppsala slott","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-slottshistoriska/29389/history-and-bar-nordens-modernaste-fästning"],
+["2026-11-26","19:00","City Lights med Uppsala Kammarorkester","Kammarorkestern i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/24955/city-lights-uppsala-kammarorkester"],
+["2026-11-26","20:00","Den Svenska Björnstammen","Popkonsert, spelas även 27 nov.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/22600/den-svenska-björnstammen"],
+["2026-11-28","19:00","Kvällsdans med Black Jack","Dansbandsdans kl 19–23.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-11-28","21:00","Nostalgiklubben","Klubbkväll med gamla hits på Flustret.","Flustret","dans","https://stadsevent.se/uppsala/evenemang/flustret/53246/nostalgiklubben"],
+["2026-11-29","15:00","Nötknäpparen","International Festival Ballet dansar Tjajkovskijs julklassiker.","Uppsala Konsert & Kongress","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/37738/nötknäpparen-med-international-festival-ballet"],
+["2026-12-02","20:00","Amanda Ginsburg: Det är jul nu igen","Jazzig julkonsert.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/21124/amanda-ginsburg-det-är-jul-nu-igen"],
+["2026-12-03","19:30","Seinabo Sey","Konsert i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/20170/seinabo-sey"],
+["2026-12-04","20:00","Kvällsdans med Blender","Dansbandsdans kl 20–24.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-12-04","20:00","The Fantastic Four: A Motown Christmas","Motown och jul, perfekt att dansa till.","Katalin","musik","https://stadsevent.se/uppsala/evenemang/katalin/18518/the-fantastic-four-a-motown-christmas-uppsala"],
+["2026-12-09","18:30","Jul med Cirkus Cirkör","Julbord med cirkus. Spelas även 10 dec.","Uppsala Konsert & Kongress","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-restaurangen-sal-d/39969/jul-med-cirkus-cirkör-årets-mest-oväntade-julbord"],
+["2026-12-10","19:30","Sista torsdagsdansen för terminen","UBSS socialdans i Granebergsparken, kl 19.30–21.30.","Granebergsparken","dans","https://ubss.se/kommande-aktiviteter-hosten-2026/"],
+["2026-12-12","19:00","Kvällsdans med Voize","Dansbandsdans kl 19–23.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-12-12","20:00","The Last Waltz!","Hyllning till den klassiska konserten.","Katalin","musik","https://stadsevent.se/uppsala/evenemang/katalin/27909/the-last-waltz"],
+["2026-12-13","17:00","Luciakonsert i Domkyrkan","Domkyrkans flickkör och Collegium Cantorum. Även kl 19.30.","Uppsala domkyrka","musik","https://stadsevent.se/uppsala/evenemang/uppsala-domkyrka/52193/uppsala-domkyrkas-flickkör-och-collegium-cantorum-luciakonsert"],
+["2026-12-18","20:00","Kvällsdans med Callinaz","Dansbandsdans kl 20–24.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
+["2026-12-19","19:30","Blackbird Swingin' Christmas","Swing och jul på Blackbird.","Blackbird","musik","https://stadsevent.se/uppsala/evenemang/blackbird/42587/blackbird-swingin-christmas"],
+];
+
+const CAT={musik:"Musik",dans:"Dans",kultur:"Kultur",aktiv:"Röra på mig",natur:"Natur",mat:"Mat & dryck",lara:"Lära mig nytt",utflykt:"Utflykt"};
+const TID=["","En timme eller två","En kväll","Halv- eller heldag"];
+const WD=["sön","mån","tis","ons","tors","fre","lör"], MO=["jan","feb","mars","april","maj","juni","juli","aug","sep","okt","nov","dec"];
+const months=["januari","februari","mars","april","maj","juni","juli","augusti","september","oktober","november","december"];
+const days=["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"];
+const $=id=>document.getElementById(id);
+const now=new Date();
+const state={cat:"",tid:0};
+let current=null, recent=[], evCat="", evShowAll=false;
+
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let done=load("jhp-done",[]), favs=load("jhp-favs",[]);
+
+function evDate(e){return new Date(e[0]+"T"+e[1]+":00")}
+function upcoming(){const t0=new Date();t0.setHours(0,0,0,0);return E.filter(e=>evDate(e)>=t0).sort((a,b)=>evDate(a)-evDate(b))}
+function evLabel(e){const d=evDate(e);return WD[d.getDay()]+" "+d.getDate()+" "+MO[d.getMonth()]+" kl "+e[1].replace(":",".")}
+function evAsActivity(e){const a=[e[2],e[3],e[5],2];a.ev=e;return a}
+function timesDone(t){return done.filter(x=>x.t===t).length}
+
+$("today").textContent=days[now.getDay()]+" "+now.getDate()+" "+months[now.getMonth()];
+
+document.querySelectorAll(".group .chips").forEach(g=>{
+  const key=g.dataset.key;
+  g.querySelectorAll("button").forEach((b,i)=>{
+    b.setAttribute("aria-pressed",i===0);
+    b.addEventListener("click",()=>{
+      state[key]=key==="tid"?+b.dataset.v:b.dataset.v;
+      g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    });
+  });
+});
+
+function pick(){
+  const m=now.getMonth()+1;
+  const soon=upcoming().filter(e=>evDate(e)-now<14*864e5).map(evAsActivity);
+  const base=A.filter(a=>!a[4]||a[4].includes(m)).concat(soon);
+  const tests=[
+    a=>(!state.cat||a[2]===state.cat)&&(!state.tid||a[3]===state.tid),
+    a=>(!state.cat||a[2]===state.cat)&&(!state.tid||a[3]<=state.tid),
+    a=>(!state.cat||a[2]===state.cat),
+  ];
+  for(const t of tests){
+    let pool=base.filter(t).filter(a=>!recent.includes(a[0]));
+    if(!pool.length) pool=base.filter(t);
+    if(!pool.length) continue;
+    /* Nytt väger tyngre: aldrig gjort = 3 lotter, gjort = 1 */
+    const bag=[]; pool.forEach(a=>{const w=timesDone(a[0])?1:3;for(let i=0;i<w;i++)bag.push(a)});
+    return bag[Math.floor(Math.random()*bag.length)];
+  }
+  return base[Math.floor(Math.random()*base.length)];
+}
+
+function show(a,isExample){
+  current=a;
+  recent.push(a[0]); if(recent.length>15) recent.shift();
+  const card=$("card"); card.style.animation="none"; card.offsetHeight; card.style.animation="";
+  $("cardEyebrow").textContent=isExample?"Exempel på förslag":a.ev?"Händer "+evLabel(a.ev):"Ditt förslag";
+  $("what").textContent=a[0];
+  $("why").textContent=a[1];
+  $("more").hidden=!a.ev; if(a.ev) $("more").href=a.ev[6];
+  $("tags").innerHTML="";
+  const tags=[[CAT[a[2]],""]];
+  if(a.ev) tags.push([a.ev[4],""]); else tags.push([TID[a[3]],""]);
+  if(!timesDone(a[0])) tags.push(["Nytt för dig","new"]);
+  tags.forEach(([t,c])=>{const s=document.createElement("span");s.className="tag "+c;s.textContent=t;$("tags").appendChild(s)});
+  const isFav=favs.includes(a[0]);
+  $("fav").setAttribute("aria-pressed",isFav); $("fav").textContent=isFav?"♥":"♡";
+  $("toast").textContent="";
+}
+
+const cheers=["Härligt! Ha så kul.","Snyggt, det blir bra.","Kör hårt!","Nu händer det grejer.","Bra val!"];
+$("go").addEventListener("click",()=>show(pick()));
+$("no").addEventListener("click",()=>show(pick()));
+$("yes").addEventListener("click",()=>{
+  if(!current) return;
+  const d=new Date();
+  done.unshift({t:current[0],d:d.getDate()+" "+MO[d.getMonth()]});
+  save("jhp-done",done); render(); show(current); recent.pop();
+  $("toast").textContent=cheers[Math.floor(Math.random()*cheers.length)];
+});
+$("fav").addEventListener("click",()=>{
+  if(!current) return;
+  const i=favs.indexOf(current[0]);
+  if(i>-1) favs.splice(i,1); else favs.unshift(current[0]);
+  save("jhp-favs",favs); show(current); recent.pop(); render();
+});
+
+function findItem(t){const ev=E.find(x=>x[2]===t);return A.find(x=>x[0]===t)||(ev&&evAsActivity(ev))}
+function render(){
+  $("count").textContent=done.length;
+  $("done").innerHTML=""; $("doneEmpty").hidden=done.length>0;
+  done.slice(0,30).forEach(x=>{
+    const li=document.createElement("li");
+    li.innerHTML='<span></span><span class="date"></span>';
+    li.children[0].textContent=x.t; li.children[1].textContent=x.d;
+    $("done").appendChild(li);
+  });
+  $("favs").innerHTML="";
+  const fl=favs.map(findItem).filter(Boolean);
+  $("favEmpty").hidden=fl.length>0;
+  fl.forEach(a=>{
+    const li=document.createElement("li");
+    li.innerHTML='<span></span><button type="button">Visa</button>';
+    li.children[0].textContent=a[0]+(a.ev?" ("+evLabel(a.ev)+")":"");
+    li.children[1].addEventListener("click",()=>{show(a);window.scrollTo({top:$("card").offsetTop-20,behavior:"smooth"})});
+    $("favs").appendChild(li);
+  });
+}
+
+function renderEvents(){
+  const all=upcoming().filter(e=>!evCat||e[5]===evCat);
+  const list=evShowAll?all:all.slice(0,8);
+  $("evEmpty").hidden=all.length>0; $("evlist").innerHTML="";
+  $("moreEv").hidden=all.length<=8||evShowAll;
+  let lastM=-1;
+  list.forEach(e=>{
+    const d=evDate(e);
+    if(d.getMonth()!==lastM){lastM=d.getMonth();const h=document.createElement("li");h.className="evmonth";h.textContent=months[lastM].charAt(0).toUpperCase()+months[lastM].slice(1);$("evlist").appendChild(h)}
+    const li=document.createElement("li"); li.className="ev";
+    li.innerHTML='<div class="day"><small></small><b></b><small></small></div><div class="info"><strong></strong><span></span><a target="_blank" rel="noopener">Läs mer</a></div>';
+    const sm=li.querySelectorAll(".day small"); sm[0].textContent=WD[d.getDay()]; sm[1].textContent=MO[d.getMonth()];
+    li.querySelector("b").textContent=d.getDate();
+    li.querySelector("strong").textContent=e[2];
+    li.querySelector(".info span").textContent="kl "+e[1].replace(":",".")+" · "+e[4];
+    li.querySelector("a").href=e[6];
+    $("evlist").appendChild(li);
+  });
+}
+$("evfilter").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+  evCat=b.dataset.v; evShowAll=false;
+  $("evfilter").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  renderEvents();
+}));
+$("moreEv").addEventListener("click",()=>{evShowAll=true;renderEvents()});
+
+renderEvents();
+render();
+show(A[1],true);
+</script>
+<script>
+let deferred;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;document.getElementById("install").hidden=false});
+document.getElementById("install").addEventListener("click",async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;document.getElementById("install").hidden=true});
+window.addEventListener("appinstalled",()=>{document.getElementById("install").hidden=true});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
