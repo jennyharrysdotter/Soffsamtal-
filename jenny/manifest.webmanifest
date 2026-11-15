@@ -1,6 +1,6 @@
 {
-  "name": "Jennys hitte-på app",
-  "short_name": "Hitte-på",
+  "name": "Vad ska jag hitta på?",
+  "short_name": "Hitta på",
   "description": "Nya saker att göra i och runt Uppsala.",
   "lang": "sv",
   "start_url": "./",

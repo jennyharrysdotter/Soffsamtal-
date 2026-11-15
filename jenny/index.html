@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Jennys hitte-på app</title>
+<title>Vad ska jag hitta på?</title>
 <meta name="theme-color" content="#4B2E6F">
 <meta name="description" content="Nya saker att göra i och runt Uppsala.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -98,7 +98,7 @@ li button{background:none;border:0;color:var(--plum);font:600 13px var(--body);c
 <div class="wrap">
   <header>
     <p class="eyebrow" id="today">Idag</p>
-    <h1>Jennys <span>hitte-på</span> app</h1>
+    <h1>Vad ska jag <span>hitta på</span>?</h1>
     <p class="sub">Nya saker att göra i och runt Uppsala.</p>
   </header>
 
@@ -149,7 +149,7 @@ li button{background:none;border:0;color:var(--plum);font:600 13px var(--body);c
     <ul id="klist"></ul>
     <p class="empty" id="kEmpty" hidden>Inget inlagt för den här scenen just nu.</p>
     <button class="more-ev" id="moreK" type="button" hidden>Visa fler</button>
-    <details class="venues"><summary>Alla scener och deras program</summary><ul id="venues"></ul></details>
+    <details class="venues"><summary>Alla scener, museer och kalendrar</summary><ul id="venues"></ul></details>
   </section>
 
   <section class="lists">
@@ -270,6 +270,7 @@ const A=[
 const E=[
 ["2026-11-17","20:00","Moonica Mac","Spelning i den mindre jazzklubbsdelen på Katalin.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/35324/moonica-mac"],
 ["2026-11-18","19:00","Kvinnor och äppelträd","Dans och teater på Gottsunda Dans & Teater.","Gottsunda Dans & Teater","kultur","https://stadsevent.se/uppsala/evenemang/gottsunda-dans-och-teater/52692/kvinnor-och-äppelträd"],
+["2026-11-17","17:15","Allt ljus på Uppsala: mod och tålamod","Föreläsning och frågestund om årets ljusfestival. Fri entré.","Gustavianum","kultur","https://www.uu.se/download/18.35ade9931a01f5dd38b136ba/1787643719738/H%C3%B6stprogram%202026.pdf"],
 ["2026-11-19","13:00","Dagdans med Micke Ahlgrens","Dansbandsdans på eftermiddagen, kl 13–17.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
 ["2026-11-19","19:30","Pyjamasparty på torsdagsdansen","UBSS socialdans i pyjamas, kl 19.30–21.30.","Granebergsparken","dans","https://ubss.se/pyjamasparty-pa-torsdagsdansen/"],
 ["2026-11-20","12:15","Lunchkonsert: Enkel, vacker, öm","Lunchkonsert i Sal B.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-sal-b/31978/lunchkonsert-enkel-vacker-öm"],
@@ -280,13 +281,20 @@ const E=[
 ["2026-11-26","18:00","History and Bar: Nordens modernaste fästning?","Historia och bar på slottet.","Uppsala slott","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-slottshistoriska/29389/history-and-bar-nordens-modernaste-fästning"],
 ["2026-11-26","19:00","City Lights med Uppsala Kammarorkester","Kammarorkestern i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/24955/city-lights-uppsala-kammarorkester"],
 ["2026-11-26","20:00","Den Svenska Björnstammen","Popkonsert, spelas även 27 nov.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/22600/den-svenska-björnstammen"],
+["2026-11-26","18:00","Konst & bar: grafik och keramik","Konst och en drink en torsdagskväll.","Uppsala","kultur","https://stadsevent.se/uppsala/evenemang/annan-plats/52990/konst-och-bar-grafik-och-keramik"],
+["2026-11-28","","Julmarknad i Ulleråker","Gratis julmarknad med dansbana, musik och eldshow i Solglimtsparken.","Solglimtsparken, Ulleråker","kultur","https://gratisuppsala.se/events/julmarknad-i-ulleraker-2026/"],
+["2026-11-28","","Julmarknad i Kopphagen","Julmarknad med dansbana och eldshow vid festplatsen i Länna.","Kopphagen, Länna","kultur","https://gratisuppsala.se/events/julmarknad-i-kopphagen-november2026/"],
 ["2026-11-28","19:00","Kvällsdans med Black Jack","Dansbandsdans kl 19–23.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
 ["2026-11-28","21:00","Nostalgiklubben","Klubbkväll med gamla hits på Flustret.","Flustret","dans","https://stadsevent.se/uppsala/evenemang/flustret/53246/nostalgiklubben"],
 ["2026-11-29","15:00","Nötknäpparen","International Festival Ballet dansar Tjajkovskijs julklassiker.","Uppsala Konsert & Kongress","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/37738/nötknäpparen-med-international-festival-ballet"],
+["2026-12-01","18:00","Kvällsöppet på Gustavianum","Föreläsning om doft och minne kl 18 och minikonsert med Uppsalakören Sorella kl 19.","Gustavianum","kultur","https://www.uu.se/download/18.35ade9931a01f5dd38b136ba/1787643719738/H%C3%B6stprogram%202026.pdf"],
 ["2026-12-02","20:00","Amanda Ginsburg: Det är jul nu igen","Jazzig julkonsert.","Katalin and all that jazz","musik","https://stadsevent.se/uppsala/evenemang/katalin-and-all-that-jazz/21124/amanda-ginsburg-det-är-jul-nu-igen"],
 ["2026-12-03","19:30","Seinabo Sey","Konsert i Stora salen.","Uppsala Konsert & Kongress","musik","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-stora-salen/20170/seinabo-sey"],
 ["2026-12-04","20:00","Kvällsdans med Blender","Dansbandsdans kl 20–24.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
 ["2026-12-04","20:00","The Fantastic Four: A Motown Christmas","Motown och jul, perfekt att dansa till.","Katalin","musik","https://stadsevent.se/uppsala/evenemang/katalin/18518/the-fantastic-four-a-motown-christmas-uppsala"],
+["2026-12-05","","Uppsala historiska julmarknad","Historisk julmarknad på S:t Eriks torg, även 6 december.","S:t Eriks torg","kultur","https://destinationuppsala.se/event/uppsala-historiska-julmarknad-2026/"],
+["2026-12-06","11:00","Local Femmes julmarknad","Gratis julmarknad med lokala hantverkare och småföretagare.","Uppsala Konsert & Kongress","kultur","https://ukk.se/local-femmes-julmarknad-2026/"],
+["2026-12-06","18:00","Regina peregrina","Musikalisk vandring genom museet med musik från drottning Kristinas hov. 200 kr, boka via museum.gust@uu.se.","Gustavianum","musik","https://www.uu.se/gustavianum/kalendarium/arkiv/2026-12-06-regina-peregrina"],
 ["2026-12-09","18:30","Jul med Cirkus Cirkör","Julbord med cirkus. Spelas även 10 dec.","Uppsala Konsert & Kongress","kultur","https://stadsevent.se/uppsala/evenemang/uppsala-konsert-och-kongress-restaurangen-sal-d/39969/jul-med-cirkus-cirkör-årets-mest-oväntade-julbord"],
 ["2026-12-10","19:30","Sista torsdagsdansen för terminen","UBSS socialdans i Granebergsparken, kl 19.30–21.30.","Granebergsparken","dans","https://ubss.se/kommande-aktiviteter-hosten-2026/"],
 ["2026-12-12","19:00","Kvällsdans med Voize","Dansbandsdans kl 19–23.","Fyris Park","dans","https://www.danslogen.se/dansprogram/lan/uppsala"],
@@ -404,9 +412,9 @@ function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){re
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 let done=load("jhp-done",[]), favs=load("jhp-favs",[]);
 
-function evDate(e){return new Date(e[0]+"T"+e[1]+":00")}
+function evDate(e){return new Date(e[0]+"T"+(e[1]||"12:00")+":00")}
 function upcoming(){const t0=new Date();t0.setHours(0,0,0,0);return E.filter(e=>evDate(e)>=t0).sort((a,b)=>evDate(a)-evDate(b))}
-function evLabel(e){const d=evDate(e);return WD[d.getDay()]+" "+d.getDate()+" "+MO[d.getMonth()]+" kl "+e[1].replace(":",".")}
+function evLabel(e){const d=evDate(e);return WD[d.getDay()]+" "+d.getDate()+" "+MO[d.getMonth()]+(e[1]?" kl "+e[1].replace(":","."):"")}
 function evAsActivity(e){const a=[e[2],e[3],e[5],2];a.ev=e;return a}
 function timesDone(t){return done.filter(x=>x.t===t).length}
 
@@ -514,7 +522,7 @@ function renderEvents(){
     const sm=li.querySelectorAll(".day small"); sm[0].textContent=WD[d.getDay()]; sm[1].textContent=MO[d.getMonth()];
     li.querySelector("b").textContent=d.getDate();
     li.querySelector("strong").textContent=e[2];
-    li.querySelector(".info span").textContent="kl "+e[1].replace(":",".")+" · "+e[4];
+    li.querySelector(".info span").textContent=(e[1]?"kl "+e[1].replace(":",".")+" · ":"")+e[4];
     li.querySelector("a").href=e[6];
     $("evlist").appendChild(li);
   });
@@ -537,7 +545,12 @@ const VENUES=[
  ["Parksnäckan","Sommarscen i Stadsträdgården, programmet släpps på våren","https://destinationuppsala.se/event-kategori/konsert/"],
  ["Fyris Park","Dansbandsdanser","https://www.danslogen.se/dansprogram/lan/uppsala"],
  ["Universitetets konserter","Akademiska kapellet, körer och jazzorkester","https://www.uu.se/"],
- ["Alla konserter i Uppsala","Destination Uppsalas samlade kalender","https://destinationuppsala.se/event-kategori/konsert/"],
+ ["Gustavianum","Universitetets museum, föreläsningar och kvällsöppet","https://www.uu.se/gustavianum"],
+ ["Upplandsmuseet","Landskapets historia, helgprogram och visningar","https://www.upplandsmuseet.se/besok-oss/KalenderUpplandsmuseet/"],
+ ["Uppsala konstmuseum","Utställningar, visningar och kvällar med konst och bar","https://konstmuseum.uppsala.se/"],
+ ["Bror Hjorths hus","Konstnärshem och utställningar","https://brorhjorthshus.se/"],
+ ["Gratis Uppsala","Gratisevenemang i hela stan","https://gratisuppsala.se/"],
+ ["Allt som händer i Uppsala","Destination Uppsalas samlade kalender","https://destinationuppsala.se/event/"],
 ];
 let kScen="", kShowAll=false;
 function kDate(k){return new Date(k[0]+"T"+(k[1]||"12:00")+":00")}
